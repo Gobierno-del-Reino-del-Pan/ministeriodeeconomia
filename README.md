@@ -48,9 +48,4 @@ Abre tu navegador en: **http://localhost:4433**
 - **Servidor:** Express + Vite (dev middleware / static en producción)
 - **Base de datos:** Supabase (pendiente de configurar — claves en .env)
 
-## Assets necesarios
-
-Coloca en `client/public/`:
-- `logo.png` — Logotipo/escudo cuadrado del Reino del Pan (aparece en header y favicon)
-- `fonts/Chillvornia-Regular.otf`
-- `fonts/RMNeueTRIAL-Regular.otf`
+Es una caca como una catedral pero al menos hay algo, mañana hago q funcione y si alguien quiere decorarlo bienvenido sea
