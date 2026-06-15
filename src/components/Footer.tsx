@@ -22,35 +22,42 @@ export default function Footer() {
           {/* El Ministerio */}
           <div>
             <p className="footer-heading">El Ministerio</p>
-            <a href="/ministerio" className="footer-link">Quiénes somos</a>
-            <a href="/ministerio/organizacion" className="footer-link">Organización</a>
-            <a href="/ministerio/secretarias" className="footer-link">Secretarías</a>
-            <a href="/ministerio/agenda" className="footer-link">Agenda institucional</a>
+            <Link href="/ministerio" className="footer-link">Quiénes somos</Link>
+            <Link href="/ministerio/organizacion" className="footer-link">Organización</Link>
+            <Link href="/ministerio/secretarias" className="footer-link">Secretarías</Link>
+            <Link href="/ministerio/agenda" className="footer-link">Agenda institucional</Link>
           </div>
 
           {/* Áreas */}
           <div>
             <p className="footer-heading">Áreas</p>
-            <a href="/comercio" className="footer-link">Comercio Exterior</a>
-            <a href="/comercio/exportaciones" className="footer-link">Exportaciones</a>
-            <a href="/empleo" className="footer-link">Empleo y Trabajo</a>
-            <a href="/empleo/estadisticas" className="footer-link">Estadísticas</a>
+            <Link href="/comercio" className="footer-link">Comercio Exterior</Link>
+            <Link href="/comercio/exportaciones" className="footer-link">Exportaciones</Link>
+            <Link href="/empleo" className="footer-link">Empleo y Trabajo</Link>
+            <Link href="/empleo/estadisticas" className="footer-link">Estadísticas</Link>
           </div>
 
           {/* Ciudadano */}
           <div>
             <p className="footer-heading">Ciudadano</p>
-            <a href="/sede" className="footer-link">Sede Electrónica</a>
-            <a href="/sede/tramites" className="footer-link">Trámites</a>
-            <a href="/boe" className="footer-link">Boletín Oficial</a>
-            <a href="/sede/notificaciones" className="footer-link">Notificaciones</a>
+            <Link href="/lpb" className="footer-link">LPB - Laboral Panien Bank</Link>
+            <Link href="/lpb/tramites" className="footer-link">Trámites</Link>
+            <Link href="/lpb/notificaciones" className="footer-link">Notificaciones</Link>
           </div>
 
         </div>
 
         <div className="footer-bottom">
           <span>© {year} Ministerio de Economía, Comercio y Empresa — Reino del Pan. Todos los derechos reservados.</span>
-          <span>Accesibilidad · Aviso legal · Política de privacidad · Mapa del portal</span>
+          <span>
+            <Link href="/accesibilidad" className="footer-link-inline">Accesibilidad</Link>
+            {' · '}
+            <Link href="/aviso-legal" className="footer-link-inline">Aviso legal</Link>
+            {' · '}
+            <Link href="/privacidad" className="footer-link-inline">Política de privacidad</Link>
+            {' · '}
+            <Link href="/mapa-del-portal" className="footer-link-inline">Mapa del portal</Link>
+          </span>
         </div>
       </div>
     </footer>

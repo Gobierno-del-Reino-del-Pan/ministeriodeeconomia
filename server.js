@@ -28,7 +28,7 @@ async function bootstrap() {
   app.listen(PORT, () => {
     console.log('');
     console.log('  ╔══════════════════════════════════════════════════════╗');
-    console.log(`  ║  MECE · Reino del Pan  →  http://localhost:${PORT}   ║`);
+    console.log(`  ║  MECE · Reino del Pan  →  http://localhost:${PORT}    ║`);
     console.log('  ╚══════════════════════════════════════════════════════╝');
     console.log('');
   });

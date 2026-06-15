@@ -26,7 +26,7 @@ export default function Exportaciones() {
             </p>
             <div className="alert alert-warning" style={{ marginBottom: '1.5rem' }}>
               <span>⚠️</span>
-              <span>El plazo de solicitud está abierto hasta el <strong>31 de agosto de 2026</strong>. Las solicitudes deben presentarse a través de la Sede Electrónica.</span>
+              <span>El plazo de solicitud está abierto hasta el <strong>31 de agosto de 2026</strong>. Las solicitudes deben presentarse a través del LPB.</span>
             </div>
             <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '1.1rem', marginBottom: '0.75rem' }}>Beneficiarios</h3>
             <ul style={{ margin: '0 0 1.5rem', padding: '0 0 0 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
@@ -34,7 +34,7 @@ export default function Exportaciones() {
               <li style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>Con menos de 250 trabajadores (PYME)</li>
               <li style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>Sin exportaciones previas o con exportaciones inferiores al 10% de su facturación</li>
             </ul>
-            <a href="/sede/tramites" className="btn btn-primary">Solicitar en Sede Electrónica</a>
+            <a href="/lpb/tramites" className="btn btn-primary">Solicitar en LPB</a>
           </div>
         </div>
       </div>

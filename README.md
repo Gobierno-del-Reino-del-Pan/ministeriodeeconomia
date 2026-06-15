@@ -37,9 +37,13 @@ Abre tu navegador en: **http://localhost:4433**
 | /empleo/formacion | Formación profesional |
 | /boe | Boletín Oficial del Reino del Pan |
 | /boe/:id | Detalle de disposición BOE |
-| /sede | Sede electrónica |
-| /sede/tramites | Catálogo de trámites |
-| /sede/notificaciones | Notificaciones electrónicas |
+| /lpb | LPB — Laboral Panien Bank |
+| /lpb/tramites | Catálogo de trámites |
+| /lpb/notificaciones | Notificaciones electrónicas |
+| /accesibilidad | Declaración de accesibilidad |
+| /aviso-legal | Aviso legal |
+| /privacidad | Política de privacidad |
+| /mapa-del-portal | Mapa del portal |
 
 ## Tecnologías
 

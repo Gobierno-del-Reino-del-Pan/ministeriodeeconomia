@@ -25,9 +25,9 @@ export default function Formacion() {
             </p>
             <div className="alert alert-info" style={{ marginBottom: '1.5rem' }}>
               <span>📚</span>
-              <span>El catálogo de cursos para el segundo semestre de 2026 se publicará el <strong>1 de julio de 2026</strong> en la Sede Electrónica.</span>
+              <span>El catálogo de cursos para el segundo semestre de 2026 se publicará el <strong>1 de julio de 2026</strong> en el LPB.</span>
             </div>
-            <a href="/sede/tramites" className="btn btn-primary">Consultar oferta formativa</a>
+            <a href="/lpb/tramites" className="btn btn-primary">Consultar oferta formativa</a>
           </div>
         </div>
       </div>

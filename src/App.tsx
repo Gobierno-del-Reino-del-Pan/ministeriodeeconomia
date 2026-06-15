@@ -15,11 +15,13 @@ import EmpleoIndex from './pages/empleo/index';
 import Estadisticas from './pages/empleo/estadisticas';
 import Politicas from './pages/empleo/politicas';
 import Formacion from './pages/empleo/formacion';
-import BoeIndex from './pages/boe/index';
-import BoeDetalle from './pages/boe/[id]';
-import SedeIndex from './pages/sede/index';
-import Tramites from './pages/sede/tramites';
-import Notificaciones from './pages/sede/notificaciones';
+import LpbIndex from './pages/lpb/index';
+import Tramites from './pages/lpb/tramites';
+import Notificaciones from './pages/lpb/notificaciones';
+import Accesibilidad from './pages/legal/accesibilidad';
+import AvisoLegal from './pages/legal/aviso-legal';
+import Privacidad from './pages/legal/privacidad';
+import MapaDelPortal from './pages/legal/mapa-del-portal';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -42,13 +44,15 @@ export default function App() {
       <Route path="/empleo/estadisticas" component={Estadisticas} />
       <Route path="/empleo/politicas" component={Politicas} />
       <Route path="/empleo/formacion" component={Formacion} />
-      {/* BOE */}
-      <Route path="/boe" component={BoeIndex} />
-      <Route path="/boe/:id" component={BoeDetalle} />
-      {/* Sede electrónica */}
-      <Route path="/sede" component={SedeIndex} />
-      <Route path="/sede/tramites" component={Tramites} />
-      <Route path="/sede/notificaciones" component={Notificaciones} />
+      {/* LPB */}
+      <Route path="/lpb" component={LpbIndex} />
+      <Route path="/lpb/tramites" component={Tramites} />
+      <Route path="/lpb/notificaciones" component={Notificaciones} />
+      {/* Legal */}
+      <Route path="/accesibilidad" component={Accesibilidad} />
+      <Route path="/aviso-legal" component={AvisoLegal} />
+      <Route path="/privacidad" component={Privacidad} />
+      <Route path="/mapa-del-portal" component={MapaDelPortal} />
       {/* 404 */}
       <Route component={NotFound} />
     </Switch>

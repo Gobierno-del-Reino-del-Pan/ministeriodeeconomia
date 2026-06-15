@@ -368,6 +368,14 @@ h1, h2, h3, h4, h5, h6 {
 
 .footer-link:hover { color: var(--gold-light); }
 
+.footer-link-inline {
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  transition: color 180ms;
+}
+
+.footer-link-inline:hover { color: var(--gold-light); }
+
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.1);
   margin-top: 2.5rem;

@@ -10,12 +10,12 @@ const DESTACADOS = [
 ];
 
 const ACCESOS = [
-  { icon: '📋', label: 'Trámites y Gestiones',  href: '/sede/tramites',       desc: 'Solicitudes, licencias y registros' },
+  { icon: '📋', label: 'Trámites y Gestiones',  href: '/lpb/tramites',        desc: 'Solicitudes, licencias y registros' },
   { icon: '📰', label: 'Boletín Oficial',        href: '/boe',                 desc: 'Legislación y disposiciones oficiales' },
   { icon: '📊', label: 'Estadísticas',           href: '/empleo/estadisticas', desc: 'Datos económicos y de empleo' },
   { icon: '🌐', label: 'Comercio Exterior',      href: '/comercio',            desc: 'Exportaciones e inversiones' },
   { icon: '🏛️', label: 'El Ministerio',          href: '/ministerio',          desc: 'Organización y competencias' },
-  { icon: '🏦', label: 'LPB',                    href: '/sede',                desc: 'Laboral Panien Bank' },
+  { icon: '🏦', label: 'LPB',                    href: '/lpb',                  desc: 'Laboral Panien Bank' },
 ];
 
 const STATS = [
@@ -45,7 +45,7 @@ export default function Home() {
             Impulsamos el crecimiento económico, el comercio sostenible y el empleo de calidad en el Reino del Pan.
           </p>
           <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap' }}>
-            <Link href="/sede/tramites" className="btn btn-gold">Iniciar un trámite</Link>
+            <Link href="/lpb/tramites" className="btn btn-gold">Iniciar un trámite</Link>
             <Link href="/ministerio" className="btn btn-outline" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.45)' }}>Conocer el Ministerio</Link>
           </div>
         </div>
@@ -114,40 +114,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* BOE */}
-      <section className="section">
-        <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1.25rem' }}>
-            <h2 style={{ fontFamily: 'var(--display-font)', fontSize: '1.4rem' }}>Últimas disposiciones — BOE</h2>
-            <Link href="/boe" style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>Ir al BOE →</Link>
-          </div>
-          <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
-            <table className="boe-table">
-              <thead>
-                <tr><th>Referencia</th><th>Título</th><th>Sección</th><th>Fecha</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><Link href="/boe/rdp-2026-421" style={{ color: 'var(--primary)', fontWeight: 600 }}>RDP-2026-421</Link></td>
-                  <td>Real Decreto de regulación del comercio ambulante</td>
-                  <td>I — Disposiciones generales</td><td>10 jun. 2026</td>
-                </tr>
-                <tr>
-                  <td><Link href="/boe/rdp-2026-418" style={{ color: 'var(--primary)', fontWeight: 600 }}>RDP-2026-418</Link></td>
-                  <td>Orden ministerial sobre clasificación arancelaria</td>
-                  <td>II — Autoridades y personal</td><td>7 jun. 2026</td>
-                </tr>
-                <tr>
-                  <td><Link href="/boe/rdp-2026-410" style={{ color: 'var(--primary)', fontWeight: 600 }}>RDP-2026-410</Link></td>
-                  <td>Resolución de convocatoria de becas de empleo</td>
-                  <td>III — Otras disposiciones</td><td>2 jun. 2026</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
       {/* AVISO */}
       <section style={{ paddingBottom: '3.5rem' }}>
         <div className="container">
@@ -156,7 +122,7 @@ export default function Home() {
             <span>
               El <strong>LPB (Laboral Panien Bank)</strong> está en fase de despliegue. Algunas funcionalidades se habilitarán progresivamente durante las próximas semanas.
               Para consultas urgentes, utilice los canales habilitados en{' '}
-              <Link href="/sede" style={{ color: 'var(--primary)', fontWeight: 600 }}>lpb.mece.rdp.gov</Link>.
+              <Link href="/lpb" style={{ color: 'var(--primary)', fontWeight: 600 }}>lpb.mece.rdp.gov</Link>.
             </span>
           </div>
         </div>
