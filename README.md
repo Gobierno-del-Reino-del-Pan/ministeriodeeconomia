@@ -21,35 +21,29 @@ Abre tu navegador en: **http://localhost:4433**
 
 | Ruta | Descripción |
 |------|-------------|
-| / | Portada del Ministerio |
-| /ministerio | El Ministerio — Quiénes somos |
-| /ministerio/organizacion | Organigrama |
-| /ministerio/secretarias | Secretarías de Estado |
-| /ministerio/agenda | Agenda institucional |
-| /ministerio/noticias | Sala de prensa |
-| /comercio | Política comercial |
-| /comercio/exportaciones | Programa de exportaciones |
-| /comercio/inversiones | Inversiones extranjeras |
-| /comercio/acuerdos | Acuerdos comerciales |
-| /empleo | Política de empleo |
-| /empleo/estadisticas | Estadísticas del mercado de trabajo |
-| /empleo/politicas | Políticas activas de empleo |
-| /empleo/formacion | Formación profesional |
-| /boe | Boletín Oficial del Reino del Pan |
-| /boe/:id | Detalle de disposición BOE |
-| /lpb | LPB — Laboral Panien Bank |
-| /lpb/tramites | Catálogo de trámites |
-| /lpb/notificaciones | Notificaciones electrónicas |
-| /accesibilidad | Declaración de accesibilidad |
-| /aviso-legal | Aviso legal |
-| /privacidad | Política de privacidad |
-| /mapa-del-portal | Mapa del portal |
+| `/` | Portada del Ministerio |
+| `/ministerio` | El Ministerio — Quiénes somos |
+| `/ministerio/organizacion` | Organigrama |
+| `/ministerio/secretarias` | Secretarías de Estado |
+| `/ministerio/agenda` | Agenda institucional |
+| `/ministerio/noticias` | Sala de prensa |
+| `/comercio` | Política comercial |
+| `/comercio/exportaciones` | Programa de exportaciones |
+| `/comercio/inversiones` | Inversiones extranjeras |
+| `/comercio/acuerdos` | Acuerdos comerciales |
+| `/empleo` | Política de empleo |
+| `/empleo/estadisticas` | Estadísticas del mercado de trabajo |
+| `/empleo/politicas` | Políticas activas de empleo |
+| `/empleo/formacion` | Formación profesional |
+| `/lpb` | LPB — Laboral Panien Bank (Inicio) |
+| `/lpb/cuenta` | Mi cuenta LPB |
+| `/lpb/prestamos` | Solicitud de préstamos |
+| `/lpb/transferencia` | Realizar transferencias |
+| `/accesibilidad` | Declaración de accesibilidad |
+| `/aviso-legal` | Aviso legal |
+| `/privacidad` | Política de privacidad |
+| `/mapa-del-portal` | Mapa del portal |
+| Cualquier otra ruta | Página no encontrada (404) |
 
-## Tecnologías
-
-- **Frontend:** React 18 + TypeScript + Wouter (router)
-- **Estilos:** Tailwind CSS v4 + CSS custom properties
-- **Servidor:** Express + Vite (dev middleware / static en producción)
-- **Base de datos:** Supabase (pendiente de configurar — claves en .env)
-
-Es una caca como una catedral pero al menos hay algo, mañana hago q funcione y si alguien quiere decorarlo bienvenido sea
+##
+Falta arreglar un huevo de cosas pero bueno, al menos lo básico está, si alguien quiere ayudar, bienvenido sea.
