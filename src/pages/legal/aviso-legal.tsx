@@ -17,7 +17,8 @@ export default function AvisoLegal() {
             </p>
             <ul style={{ color: 'var(--foreground)', lineHeight: 1.8, paddingLeft: '1.5rem' }}>
               <li><strong>Titular:</strong> Ministerio de Economía, Comercio y Empresa del Reino del Pan</li>
-              <li><strong>Domicilio:</strong> La Capital</li>
+              <li><strong>Domicilio:</strong> Plaza de la Constitución, 1, 28001 Pan City</li>
+              <li><strong>NIF:</strong> S-1234567-H</li>
               <li><strong>Email:</strong> info@economia.gob.pan</li>
             </ul>
           </div>

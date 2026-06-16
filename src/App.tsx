@@ -15,13 +15,19 @@ import EmpleoIndex from './pages/empleo/index';
 import Estadisticas from './pages/empleo/estadisticas';
 import Politicas from './pages/empleo/politicas';
 import Formacion from './pages/empleo/formacion';
+
+// LPB
 import LpbIndex from './pages/lpb/index';
-import Tramites from './pages/lpb/tramites';
-import Notificaciones from './pages/lpb/notificaciones';
+import LpbCuenta from './pages/lpb/cuenta';
+import LpbPrestamos from './pages/lpb/prestamos';
+import LpbTransferencia from './pages/lpb/transferencia';
+
+// Legal
 import Accesibilidad from './pages/legal/accesibilidad';
 import AvisoLegal from './pages/legal/aviso-legal';
 import Privacidad from './pages/legal/privacidad';
 import MapaDelPortal from './pages/legal/mapa-del-portal';
+
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -46,8 +52,9 @@ export default function App() {
       <Route path="/empleo/formacion" component={Formacion} />
       {/* LPB */}
       <Route path="/lpb" component={LpbIndex} />
-      <Route path="/lpb/tramites" component={Tramites} />
-      <Route path="/lpb/notificaciones" component={Notificaciones} />
+      <Route path="/lpb/cuenta" component={LpbCuenta} />
+      <Route path="/lpb/prestamos" component={LpbPrestamos} />
+      <Route path="/lpb/transferencia" component={LpbTransferencia} />
       {/* Legal */}
       <Route path="/accesibilidad" component={Accesibilidad} />
       <Route path="/aviso-legal" component={AvisoLegal} />

@@ -36,6 +36,19 @@ export default function Privacidad() {
           </div>
 
           <div className="card" style={{ marginBottom: '2rem' }}>
+            <h2 style={{ fontFamily: 'var(--display-font)', marginBottom: '1rem', color: 'var(--foreground)' }}>Compromiso de confidencialidad y no cesión a terceros</h2>
+            <p style={{ color: 'var(--foreground)', lineHeight: 1.8, marginBottom: '1rem' }}>
+              El Ministerio de Economía, Comercio y Empresa se compromete a mantener la más estricta confidencialidad sobre los datos personales de los ciudadanos, incluyendo el <strong>DPI, ID de Discord, nombre de usuario, dirección de correo electrónico y cualquier otra información de identificación personal</strong>.
+            </p>
+            <p style={{ color: 'var(--foreground)', lineHeight: 1.8, marginBottom: '1rem' }}>
+              <strong>No compartimos ni vendemos sus datos personales a terceros</strong>, salvo en los casos en que sea estrictamente necesario para la prestación del servicio (por ejemplo, la autenticación con Discord, que se realiza a través de la API oficial de Discord) o cuando exista una obligación legal que así lo exija.
+            </p>
+            <p style={{ color: 'var(--foreground)', lineHeight: 1.8 }}>
+              Todos los datos se almacenan de forma segura en nuestros sistemas y solo se utilizan para las finalidades descritas en esta política.
+            </p>
+          </div>
+
+          <div className="card" style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontFamily: 'var(--display-font)', marginBottom: '1rem', color: 'var(--foreground)' }}>Derechos de los ciudadanos</h2>
             <p style={{ color: 'var(--foreground)', lineHeight: 1.8, marginBottom: '1rem' }}>
               Toda persona tiene derecho a obtener confirmación sobre el tratamiento de sus datos personales y a acceder a ellos, así como a solicitar su rectificación, supresión, limitación del tratamiento, portabilidad y oposición, dirigiendo su solicitud a la dirección del Delegado de Protección de Datos.

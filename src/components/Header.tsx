@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'wouter';
+import { useAuth } from '../lib/auth';
 
 const NAV = [
   { label: 'Home', href: '/' },
@@ -6,11 +7,11 @@ const NAV = [
     label: 'Ministerio',
     href: '/ministerio',
     sub: [
-      { label: 'El Ministerio', href: '/ministerio' },
-      { label: 'Organización', href: '/ministerio/organizacion' },
-      { label: 'Secretarías', href: '/ministerio/secretarias' },
-      { label: 'Agenda', href: '/ministerio/agenda' },
-      { label: 'Noticias', href: '/ministerio/noticias' },
+      { label: 'El Ministerio',  href: '/ministerio' },
+      { label: 'Organización',   href: '/ministerio/organizacion' },
+      { label: 'Secretarías',    href: '/ministerio/secretarias' },
+      { label: 'Agenda',         href: '/ministerio/agenda' },
+      { label: 'Noticias',       href: '/ministerio/noticias' },
     ],
   },
   {
@@ -18,9 +19,9 @@ const NAV = [
     href: '/comercio',
     sub: [
       { label: 'Política Comercial', href: '/comercio' },
-      { label: 'Exportaciones', href: '/comercio/exportaciones' },
-      { label: 'Inversiones', href: '/comercio/inversiones' },
-      { label: 'Acuerdos', href: '/comercio/acuerdos' },
+      { label: 'Exportaciones',      href: '/comercio/exportaciones' },
+      { label: 'Inversiones',        href: '/comercio/inversiones' },
+      { label: 'Acuerdos',           href: '/comercio/acuerdos' },
     ],
   },
   {
@@ -28,15 +29,24 @@ const NAV = [
     href: '/empleo',
     sub: [
       { label: 'Política de Empleo', href: '/empleo' },
-      { label: 'Estadísticas', href: '/empleo/estadisticas' },
-      { label: 'Políticas Activas', href: '/empleo/politicas' },
-      { label: 'Formación', href: '/empleo/formacion' },
+      { label: 'Estadísticas',       href: '/empleo/estadisticas' },
+      { label: 'Políticas Activas',  href: '/empleo/politicas' },
+      { label: 'Formación',          href: '/empleo/formacion' },
     ],
   },
 ];
 
 export default function Header() {
   const [location] = useLocation();
+  const { user, loading } = useAuth();
+
+  const avatarUrl = user?.avatar
+    ? `https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png?size=64`
+    : user
+    ? `https://cdn.discordapp.com/embed/avatars/0.png`
+    : null;
+
+  const isLpbActive = location.startsWith('/lpb');
 
   return (
     <header>
@@ -50,30 +60,13 @@ export default function Header() {
             padding: '0.5rem 1.25rem',
           }}
         >
-          <Link
-            href="/"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexShrink: 0,
-            }}
-          >
-            <img
-              src="/logo.png"
-              alt="Escudo del Reino del Pan"
-              className="logo-img"
-            />
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            <img src="/logo.png" alt="Escudo del Reino del Pan" className="logo-img" />
           </Link>
 
           <div style={{ flex: 1 }} />
 
-          <nav
-            style={{
-              display: 'flex',
-              gap: '1.75rem',
-              alignItems: 'center',
-            }}
-          >
+          <nav style={{ display: 'flex', gap: '1.75rem', alignItems: 'center' }}>
             {NAV.map((item) => {
               const isActive =
                 item.href === '/'
@@ -81,14 +74,10 @@ export default function Header() {
                   : location.startsWith(item.href);
 
               return (
-                <div
-                  key={item.href}
-                  style={{ position: 'relative' }}
-                  className="nav-group"
-                >
+                <div key={item.href} style={{ position: 'relative' }} className="nav-group">
                   <Link
                     href={item.href}
-                    className={`nav-link${isActive ? ' active' : ''}`}
+                    className={'nav-link' + (isActive ? ' active' : '')}
                   >
                     {item.label}
                   </Link>
@@ -96,25 +85,54 @@ export default function Header() {
               );
             })}
 
-            <Link
-              href="/lpb"
-              className="btn btn-primary"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                padding: '0.55rem 1.25rem',
-                borderRadius: 'var(--radius)',
-                background: 'var(--primary)',
-                color: '#fff',
-                textDecoration: 'none',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              }}
-            >
-              Accede a LPB
-            </Link>
+            {!loading && (
+              <>
+                {user ? (
+                  <Link
+                    href="/lpb"
+                    className={'nav-link' + (isLpbActive ? ' active' : '')}
+                  >
+                    LPB
+                  </Link>
+                ) : (
+                  <a
+                    href="/auth/discord"
+                    className="btn btn-primary"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      padding: '0.55rem 1.25rem',
+                      borderRadius: 'var(--radius)',
+                      background: 'var(--primary)',
+                      color: '#fff',
+                      textDecoration: 'none',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    }}
+                  >
+                    Accede a LPB
+                  </a>
+                )}
+
+                {user && avatarUrl && (
+                  <img
+                    src={avatarUrl}
+                    alt={user.discord_username}
+                    title={user.discord_username}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      border: '2px solid var(--gold)',
+                      objectFit: 'cover',
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+              </>
+            )}
           </nav>
         </div>
       </div>
