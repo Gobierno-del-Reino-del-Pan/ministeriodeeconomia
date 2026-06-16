@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import PageLayout from '../../components/PageLayout';
 import { useAuth } from '../../lib/auth';
@@ -15,6 +15,15 @@ const TABS: { key: TabKey; label: string; icon: string; path: string }[] = [
 
 interface Props {
   children: (props: { user: DashboardUser; economy: Economy | null; prestamos: Prestamo[]; loading: boolean }) => ReactNode;
+}
+
+// Capturar el error de la URL ANTES de que wouter navegue (se ejecuta en el módulo, no en un efecto)
+function getInitialUrlError(): string | null {
+  try {
+    return new URLSearchParams(window.location.search).get('error');
+  } catch {
+    return null;
+  }
 }
 
 // Pantalla de inicio de sesión (login con Discord)
@@ -42,7 +51,6 @@ function LoginScreen() {
   );
 }
 
-// Componente para mostrar el mensaje de "no DPI"
 function NoDpiScreen() {
   return (
     <div className="card" style={{ padding: '2.5rem', textAlign: 'center' }}>
@@ -91,7 +99,6 @@ function NoDpiScreen() {
   );
 }
 
-// Componente de error de sesión (se muestra solo cuando no hay error en la URL)
 function SessionError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
@@ -121,44 +128,29 @@ function SessionError({ onRetry }: { onRetry: () => void }) {
   );
 }
 
+const HERO_PROPS = {
+  crumbs: [{ label: 'LPB' }],
+  heroTag: 'Ministerio de Economía, Comercio y Empresa',
+  heroTitle: 'LPB — Laboral Panien Bank',
+  heroSubtitle: 'Punto de acceso a los servicios y trámites financieros y laborales del Ministerio.',
+};
+
 export default function LpbLayout({ children }: Props) {
-  const {
-  user,
-  loading: authLoading,
-  error: authError,
-  refresh,
-  logout,
-} = useAuth();
-  const { economy, prestamos, loading: dataLoading } = useLpbData();
+  const { user, loading: authLoading, error: authError, refresh, logout } = useAuth();
   const [location] = useLocation();
-  const [urlError, setUrlError] = useState<string | null>(null);
 
-  // Extraer error de la URL (por ejemplo, ?error=no_dpi)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const err = params.get('error');
-    setUrlError(err);
-  }, [location]);
+  // Capturar el error de la URL en el primer render, antes de que wouter navegue
+  const urlErrorRef = useRef<string | null>(getInitialUrlError());
+  const urlError = urlErrorRef.current;
 
-  // ============================================================
-  // ORDEN DE PRIORIDAD:
-  // 1. Errores de URL (vienen del backend)
-  // 2. Carga de autenticación
-  // 3. Error de autenticación (solo si no hay error de URL)
-  // 4. Usuario no autenticado -> login
-  // 5. Usuario sin DPI -> NoDpiScreen
-  // 6. Todo bien -> contenido con pestañas
-  // ============================================================
+  const isAuthenticated = !authLoading && !authError && !!user && !!user.dpi;
+  const { economy, prestamos, loading: dataLoading } = useLpbData(isAuthenticated);
 
-  // 1. Si hay error en la URL, mostrarlo inmediatamente
+  // ── Errores de URL del backend ────────────────────────────────────────────
+
   if (urlError === 'config') {
     return (
-      <PageLayout
-        crumbs={[{ label: 'LPB' }]}
-        heroTag="Ministerio de Economía, Comercio y Empresa"
-        heroTitle="LPB — Laboral Panien Bank"
-        heroSubtitle="Punto de acceso a los servicios y trámites financieros y laborales del Ministerio."
-      >
+      <PageLayout {...HERO_PROPS}>
         <div className="section">
           <div className="container" style={{ maxWidth: '860px' }}>
             <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
@@ -173,12 +165,7 @@ export default function LpbLayout({ children }: Props) {
 
   if (urlError === 'auth_failed') {
     return (
-      <PageLayout
-        crumbs={[{ label: 'LPB' }]}
-        heroTag="Ministerio de Economía, Comercio y Empresa"
-        heroTitle="LPB — Laboral Panien Bank"
-        heroSubtitle="Punto de acceso a los servicios y trámites financieros y laborales del Ministerio."
-      >
+      <PageLayout {...HERO_PROPS}>
         <div className="section">
           <div className="container" style={{ maxWidth: '860px' }}>
             <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
@@ -193,12 +180,7 @@ export default function LpbLayout({ children }: Props) {
 
   if (urlError === 'no_dpi') {
     return (
-      <PageLayout
-        crumbs={[{ label: 'LPB' }]}
-        heroTag="Ministerio de Economía, Comercio y Empresa"
-        heroTitle="LPB — Laboral Panien Bank"
-        heroSubtitle="Punto de acceso a los servicios y trámites financieros y laborales del Ministerio."
-      >
+      <PageLayout {...HERO_PROPS}>
         <div className="section">
           <div className="container" style={{ maxWidth: '860px' }}>
             <NoDpiScreen />
@@ -208,15 +190,11 @@ export default function LpbLayout({ children }: Props) {
     );
   }
 
-  // 2. Carga de autenticación
+  // ── Estados de autenticación ──────────────────────────────────────────────
+
   if (authLoading) {
     return (
-      <PageLayout
-        crumbs={[{ label: 'LPB' }]}
-        heroTag="Ministerio de Economía, Comercio y Empresa"
-        heroTitle="LPB — Laboral Panien Bank"
-        heroSubtitle="Punto de acceso a los servicios y trámites financieros y laborales del Ministerio."
-      >
+      <PageLayout {...HERO_PROPS}>
         <div className="section">
           <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
             <div style={{ fontSize: '1.2rem', color: 'var(--muted-foreground)' }}>Cargando sesión...</div>
@@ -226,15 +204,9 @@ export default function LpbLayout({ children }: Props) {
     );
   }
 
-  // 3. Error de autenticación (solo si no hay error de URL)
   if (authError) {
     return (
-      <PageLayout
-        crumbs={[{ label: 'LPB' }]}
-        heroTag="Ministerio de Economía, Comercio y Empresa"
-        heroTitle="LPB — Laboral Panien Bank"
-        heroSubtitle="Punto de acceso a los servicios y trámites financieros y laborales del Ministerio."
-      >
+      <PageLayout {...HERO_PROPS}>
         <div className="section">
           <div className="container" style={{ maxWidth: '860px' }}>
             <SessionError onRetry={refresh} />
@@ -244,15 +216,9 @@ export default function LpbLayout({ children }: Props) {
     );
   }
 
-  // 4. Usuario no autenticado -> mostrar pantalla de login
   if (!user) {
     return (
-      <PageLayout
-        crumbs={[{ label: 'LPB' }]}
-        heroTag="Ministerio de Economía, Comercio y Empresa"
-        heroTitle="LPB — Laboral Panien Bank"
-        heroSubtitle="Punto de acceso a los servicios y trámites financieros y laborales del Ministerio."
-      >
+      <PageLayout {...HERO_PROPS}>
         <div className="section">
           <div className="container" style={{ maxWidth: '860px' }}>
             <LoginScreen />
@@ -262,15 +228,9 @@ export default function LpbLayout({ children }: Props) {
     );
   }
 
-  // 5. Usuario autenticado pero sin DPI -> mostrar mensaje
   if (!user.dpi) {
     return (
-      <PageLayout
-        crumbs={[{ label: 'LPB' }]}
-        heroTag="Ministerio de Economía, Comercio y Empresa"
-        heroTitle="LPB — Laboral Panien Bank"
-        heroSubtitle="Punto de acceso a los servicios y trámites financieros y laborales del Ministerio."
-      >
+      <PageLayout {...HERO_PROPS}>
         <div className="section">
           <div className="container" style={{ maxWidth: '860px' }}>
             <NoDpiScreen />
@@ -280,19 +240,14 @@ export default function LpbLayout({ children }: Props) {
     );
   }
 
-  // 6. Todo bien: mostrar el contenido con las pestañas
+  // ── Todo bien: contenido con pestañas ────────────────────────────────────
+
   const isActive = (path: string) => location === path;
 
   return (
-    <PageLayout
-      crumbs={[{ label: 'LPB' }]}
-      heroTag="Ministerio de Economía, Comercio y Empresa"
-      heroTitle="LPB — Laboral Panien Bank"
-      heroSubtitle="Punto de acceso a los servicios y trámites financieros y laborales del Ministerio."
-    >
+    <PageLayout {...HERO_PROPS}>
       <div className="section">
         <div className="container" style={{ maxWidth: '860px' }}>
-          {/* Header usuario y logout */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
             <button
               onClick={logout}
@@ -306,7 +261,6 @@ export default function LpbLayout({ children }: Props) {
             </button>
           </div>
 
-          {/* Tabs como enlaces */}
           <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '0' }}>
             {TABS.map(tab => (
               <Link key={tab.key} to={tab.path}>
@@ -334,7 +288,6 @@ export default function LpbLayout({ children }: Props) {
             ))}
           </div>
 
-          {/* Contenido de la página hija */}
           {dataLoading ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--muted-foreground)' }}>Cargando datos...</div>
           ) : (

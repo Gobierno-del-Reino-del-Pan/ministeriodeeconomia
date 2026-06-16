@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Economy, Prestamo } from './types';
 
-export function useLpbData() {
+export function useLpbData(authenticated: boolean) {
   const [economy, setEconomy] = useState<Economy | null>(null);
   const [prestamos, setPrestamos] = useState<Prestamo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!authenticated) {
+      setLoading(false);
+      return;
+    }
+
     async function load() {
       setLoading(true);
       try {
@@ -24,7 +29,7 @@ export function useLpbData() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [authenticated]);
 
   return { economy, prestamos, loading };
 }
