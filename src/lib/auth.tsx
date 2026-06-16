@@ -29,7 +29,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  let retryCount = 0;
   const MAX_RETRIES = 3;
 
   const fetchUser = async (): Promise<User | null> => {
@@ -46,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loadUser = async (retry = false) => {
+  const loadUser = async () => {
     setLoading(true);
     setError(null);
     let attempts = 0;
@@ -72,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const refresh = async () => {
-    await loadUser(true);
+    await loadUser();
   };
 
   const login = () => {

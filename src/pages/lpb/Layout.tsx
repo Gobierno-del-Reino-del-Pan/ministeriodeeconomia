@@ -122,7 +122,13 @@ function SessionError({ onRetry }: { onRetry: () => void }) {
 }
 
 export default function LpbLayout({ children }: Props) {
-  const { user, loading: authLoading, error: authError, refresh } = useAuth();
+  const {
+  user,
+  loading: authLoading,
+  error: authError,
+  refresh,
+  logout,
+} = useAuth();
   const { economy, prestamos, loading: dataLoading } = useLpbData();
   const [location] = useLocation();
   const [urlError, setUrlError] = useState<string | null>(null);
