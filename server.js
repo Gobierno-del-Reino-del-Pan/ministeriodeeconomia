@@ -194,18 +194,18 @@ async function bootstrap() {
     // Leer saldo del remitente
     const { data: sender } = await sb
       .from('users_economy')
-      .select('cash')
+      .select('bank')
       .eq('id', user.discord_id)
       .maybeSingle();
 
-    if (!sender || sender.cash < amount) {
-      return res.json({ ok: false, error: 'Saldo insuficiente.' });
+    if (!sender || sender.bank < amount) {
+      return res.json({ ok: false, error: 'Saldo bancario insuficiente.' });
     }
 
     // Leer saldo del destinatario
     const { data: receiver } = await sb
       .from('users_economy')
-      .select('cash, total_earned')
+      .select('bank, total_earned')
       .eq('id', destVerif.discord_id)
       .maybeSingle();
 
@@ -216,7 +216,7 @@ async function bootstrap() {
     // Actualizar remitente
     const { error: errSender } = await sb
       .from('users_economy')
-      .update({ cash: sender.cash - amount, updated_at: new Date().toISOString() })
+      .update({ bank: sender.bank - amount, updated_at: new Date().toISOString() })
       .eq('id', user.discord_id);
 
     if (errSender) {
@@ -228,7 +228,7 @@ async function bootstrap() {
     const { error: errReceiver } = await sb
       .from('users_economy')
       .update({
-        cash: receiver.cash + amount,
+        bank: receiver.bank + amount,
         total_earned: (receiver.total_earned ?? 0) + amount,
         updated_at: new Date().toISOString(),
       })
@@ -237,7 +237,7 @@ async function bootstrap() {
     if (errReceiver) {
       console.error('transfer receiver error:', errReceiver);
       // Revertir remitente
-      await sb.from('users_economy').update({ cash: sender.cash, updated_at: new Date().toISOString() }).eq('id', user.discord_id);
+      await sb.from('users_economy').update({ bank: sender.bank, updated_at: new Date().toISOString() }).eq('id', user.discord_id);
       return res.json({ ok: false, error: 'Error al acreditar al destinatario.' });
     }
 

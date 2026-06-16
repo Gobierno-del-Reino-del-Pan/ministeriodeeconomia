@@ -1,11 +1,12 @@
-import PageLayout from '../../components/PageLayout';
-import SideNav from '../../components/SideNav';
+import PageLayout from '../../../components/PageLayout';
+import SideNav from '../../../components/SideNav';
 
 const SIDE = [
   { label: 'Política de Empleo', href: '/empleo' },
   { label: 'Estadísticas', href: '/empleo/estadisticas' },
   { label: 'Políticas Activas', href: '/empleo/politicas' },
   { label: 'Formación Profesional', href: '/empleo/formacion' },
+  { label: 'Ofertas de empleo', href: '/empleo/formacion/empleos' }, // <-- NUEVO
 ];
 
 export default function Formacion() {
@@ -27,7 +28,7 @@ export default function Formacion() {
               <span>📚</span>
               <span>El catálogo de cursos para el segundo semestre de 2026 se publicará el <strong>1 de julio de 2026</strong> en el LPB.</span>
             </div>
-            <a href="/lpb/tramites" className="btn btn-primary">Consultar oferta formativa</a>
+            <a href="/empleo/formacion/empleos" className="btn btn-primary">Consultar oferta formativa</a>
           </div>
         </div>
       </div>

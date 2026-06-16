@@ -4,7 +4,7 @@ function fmt(n: number) {
   return n?.toLocaleString('es-ES') ?? '0';
 }
 
-export default function TabTransferencia({ senderDiscordId, cash }: { senderDiscordId: string; cash: number }) {
+export default function TabTransferencia({ senderDiscordId, bank }: { senderDiscordId: string; bank: number }) {
   const [dpi, setDpi] = useState('');
   const [amount, setAmount] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
@@ -16,8 +16,8 @@ export default function TabTransferencia({ senderDiscordId, cash }: { senderDisc
       setStatus('error');
       return;
     }
-    if (Number(amount) > cash) {
-      setMsg('No tienes suficiente efectivo.');
+    if (Number(amount) > bank) {
+      setMsg('No tienes suficiente saldo en el banco.');
       setStatus('error');
       return;
     }
@@ -64,7 +64,7 @@ export default function TabTransferencia({ senderDiscordId, cash }: { senderDisc
 
         <div style={{ marginBottom: '1.25rem' }}>
           <label style={{ fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>
-            Cantidad <span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}>(efectivo disponible: {fmt(cash)} 🪙)</span>
+            Cantidad <span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}>(saldo bancario: {fmt(bank)} 🪙)</span>
           </label>
           <input
             type="number"
