@@ -9,4 +9,11 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, 'client/src') },
   },
+
+  server: {
+    host: true, // or '0.0.0.0' if you prefer
+    allowedHosts: [
+      'mineco.duckdns.org',
+    ],
+  },
 });
