@@ -17,6 +17,7 @@ interface PibSnapshot {
 
 const STORAGE_KEY = 'pib_history';
 const REFRESH_INTERVAL = 2 * 60 * 60 * 1000; // 2 horas
+const MANUAL_COOLDOWN = 5 * 60 * 1000; // 5 minutos
 
 function loadHistory(): PibSnapshot[] {
   try {
@@ -41,50 +42,15 @@ export default function Indicadores() {
   const [currentBalance, setCurrentBalance] = useState<number | null>(null);
   const [fetching, setFetching] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
+  const [cooldownRemaining, setCooldownRemaining] = useState<number>(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchPib = useCallback(async () => {
-    setFetching(true);
-    try {
-      const res = await fetch('/api/gobierno/pib');
-      const json = await res.json();
-      if (json.data && json.data.length > 0) {
-        // Sumar balances de todas las entidades públicas
-        const totalBalance = json.data.reduce((sum: number, d: { balance: number }) => sum + (d.balance ?? 0), 0);
-        setCurrentBalance(totalBalance);
-        setLastUpdate(json.fetched_at);
-
-        setHistory(prev => {
-          const now = new Date().toISOString();
-          const newEntry: PibSnapshot = { timestamp: now, balance: totalBalance };
-          // Evitar duplicados muy cercanos (< 1 min)
-          const last = prev[prev.length - 1];
-          if (last && Math.abs(new Date(now).getTime() - new Date(last.timestamp).getTime()) < 60000) {
-            return prev;
-          }
-          const updated = [...prev, newEntry];
-          // Mantener máximo 200 puntos
-          const trimmed = updated.length > 200 ? updated.slice(-200) : updated;
-          saveHistory(trimmed);
-          return trimmed;
-        });
-      }
-    } catch {
-      // silencioso
-    }
-    setFetching(false);
-  }, []);
-
-  useEffect(() => {
-    fetchPib();
-    timerRef.current = setInterval(fetchPib, REFRESH_INTERVAL);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [fetchPib]);
-
-  const drawChart = (canvas: HTMLCanvasElement | null) => {
-    if (!canvas || history.length < 2) return;
+  // Dibujar gráfica
+  const drawChart = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || history.length < 1) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -130,21 +96,45 @@ export default function Indicadores() {
     ctx.lineTo(width - padding.right, height - padding.bottom);
     ctx.stroke();
 
-    // Etiquetas eje X (fechas)
+    // Etiquetas eje X
     ctx.textAlign = 'center';
     ctx.fillStyle = '#6b7280';
     ctx.font = '10px system-ui, sans-serif';
-    const stepX = chartWidth / (history.length - 1);
-    // Mostrar solo algunas etiquetas para no saturar
+    const stepX = history.length > 1 ? chartWidth / (history.length - 1) : 0;
     const labelEvery = Math.max(1, Math.floor(history.length / 8));
     history.forEach((h, i) => {
-      if (i % labelEvery !== 0 && i !== history.length - 1) return;
+      if (history.length > 1 && i % labelEvery !== 0 && i !== history.length - 1) return;
       const x = padding.left + i * stepX;
       const date = new Date(h.timestamp);
       ctx.fillText(date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }), x, height - padding.bottom + 18);
     });
 
-    // Área bajo la línea
+    // Si solo hay un punto, dibujarlo y mostrar valor
+    if (history.length === 1) {
+      const h = history[0];
+      const x = padding.left + chartWidth / 2;
+      const y = padding.top + chartHeight - ((h.balance - yMin) / yRange) * chartHeight;
+      // Punto grande
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, 2 * Math.PI);
+      ctx.fillStyle = '#d4af37';
+      ctx.fill();
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Etiqueta
+      ctx.fillStyle = '#1f2937';
+      ctx.font = 'bold 12px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(fmt(h.balance) + ' 🪙', x, y - 16);
+      // Mensaje
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '11px system-ui, sans-serif';
+      ctx.fillText('Esperando más datos para la tendencia...', x, height - padding.bottom + 40);
+      return;
+    }
+
+    // Área bajo la línea (solo si hay más de 1 punto)
     ctx.beginPath();
     history.forEach((h, i) => {
       const x = padding.left + i * stepX;
@@ -191,11 +181,108 @@ export default function Indicadores() {
     ctx.font = 'bold 12px system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(fmt(last.balance) + ' 🪙', lastX, lastY - 14);
-  };
+  }, [history]);
+
+  // Redibujar cuando cambie history
+  useEffect(() => {
+    drawChart();
+  }, [drawChart]);
+
+  // Fetch PIB - ahora siempre guarda un valor (0 si no hay datos)
+  const fetchPib = useCallback(async () => {
+    setFetching(true);
+    try {
+      const res = await fetch('/api/gobierno/pib');
+      const json = await res.json();
+      let totalBalance = 0;
+      if (json.data && json.data.length > 0) {
+        totalBalance = json.data.reduce((sum: number, d: { balance: number }) => sum + (d.balance ?? 0), 0);
+      }
+      // Si no hay datos o el balance es NaN, usar 0
+      if (isNaN(totalBalance)) totalBalance = 0;
+
+      setCurrentBalance(totalBalance);
+      setLastUpdate(json.fetched_at || new Date().toISOString());
+
+      setHistory(prev => {
+        const now = new Date().toISOString();
+        const newEntry: PibSnapshot = { timestamp: now, balance: totalBalance };
+        const last = prev[prev.length - 1];
+        // Evitar duplicados muy cercanos (< 1 min)
+        if (last && Math.abs(new Date(now).getTime() - new Date(last.timestamp).getTime()) < 60000) {
+          // Si el último es igual, no añadimos, pero actualizamos el currentBalance
+          return prev;
+        }
+        const updated = [...prev, newEntry];
+        const trimmed = updated.length > 200 ? updated.slice(-200) : updated;
+        saveHistory(trimmed);
+        return trimmed;
+      });
+    } catch {
+      // En caso de error, registrar 0 para tener al menos algo
+      setCurrentBalance(0);
+      setHistory(prev => {
+        const now = new Date().toISOString();
+        const newEntry: PibSnapshot = { timestamp: now, balance: 0 };
+        const last = prev[prev.length - 1];
+        if (last && Math.abs(new Date(now).getTime() - new Date(last.timestamp).getTime()) < 60000) {
+          return prev;
+        }
+        const updated = [...prev, newEntry];
+        const trimmed = updated.length > 200 ? updated.slice(-200) : updated;
+        saveHistory(trimmed);
+        return trimmed;
+      });
+    }
+    setFetching(false);
+  }, []);
+
+  // Fetch inicial y auto-refresh
+  useEffect(() => {
+    fetchPib();
+    timerRef.current = setInterval(fetchPib, REFRESH_INTERVAL);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [fetchPib]);
+
+  // Manejo de actualización manual con cooldown
+  const handleManualRefresh = useCallback(() => {
+    if (cooldownRemaining > 0) {
+      return;
+    }
+    fetchPib();
+    // Iniciar cooldown
+    setCooldownRemaining(MANUAL_COOLDOWN);
+    if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+    cooldownTimerRef.current = setInterval(() => {
+      setCooldownRemaining(prev => {
+        if (prev <= 1000) {
+          clearInterval(cooldownTimerRef.current!);
+          return 0;
+        }
+        return prev - 1000;
+      });
+    }, 1000);
+  }, [fetchPib, cooldownRemaining]);
+
+  // Limpiar timer de cooldown al desmontar
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+    };
+  }, []);
 
   const growth = history.length >= 2
     ? ((history[history.length - 1].balance - history[0].balance) / Math.abs(history[0].balance || 1) * 100)
     : 0;
+
+  // Formatear tiempo de cooldown
+  const formatCooldown = (ms: number) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   return (
     <PageLayout
@@ -217,23 +304,22 @@ export default function Indicadores() {
               <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '1.1rem', marginBottom: '1rem', textAlign: 'center' }}>
                 Evolución del PIB (panedas)
               </h3>
-              {history.length < 2 ? (
+              {history.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--muted-foreground)' }}>
                   <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📈</div>
-                  <p>Recopilando datos para generar la gráfica...</p>
-                  <p style={{ fontSize: '0.85rem' }}>Se necesitan al menos 2 lecturas. La próxima se tomará en 2 horas.</p>
+                  <p>No hay datos disponibles. Haz clic en "Actualizar ahora" para obtener la primera lectura.</p>
                   <button
-                    onClick={fetchPib}
-                    disabled={fetching}
+                    onClick={handleManualRefresh}
+                    disabled={fetching || cooldownRemaining > 0}
                     className="btn btn-primary"
-                    style={{ marginTop: '1rem', padding: '0.5rem 1.5rem', fontSize: '0.9rem', opacity: fetching ? 0.5 : 1 }}
+                    style={{ marginTop: '1rem', padding: '0.5rem 1.5rem', fontSize: '0.9rem', opacity: (fetching || cooldownRemaining > 0) ? 0.5 : 1 }}
                   >
-                    {fetching ? 'Cargando...' : 'Forzar actualización'}
+                    {fetching ? 'Cargando...' : cooldownRemaining > 0 ? `Espera ${formatCooldown(cooldownRemaining)}` : 'Actualizar ahora'}
                   </button>
                 </div>
               ) : (
                 <canvas
-                  ref={drawChart}
+                  ref={canvasRef}
                   width={700}
                   height={350}
                   style={{ width: '100%', height: 'auto', aspectRatio: '700/350' }}
@@ -241,29 +327,19 @@ export default function Indicadores() {
               )}
               <div style={{ textAlign: 'center', marginTop: '0.75rem', display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                 <button
-                  onClick={fetchPib}
-                  disabled={fetching}
+                  onClick={handleManualRefresh}
+                  disabled={fetching || cooldownRemaining > 0}
                   className="btn btn-primary"
-                  style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', opacity: fetching ? 0.5 : 1 }}
+                  style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', opacity: (fetching || cooldownRemaining > 0) ? 0.5 : 1 }}
                 >
-                  {fetching ? 'Actualizando...' : 'Actualizar ahora'}
-                </button>
-                <button
-                  onClick={() => {
-                    if (confirm('¿Borrar todo el historial de PIB guardado?')) {
-                      setHistory([]);
-                      saveHistory([]);
-                    }
-                  }}
-                  style={{
-                    padding: '0.4rem 1rem', fontSize: '0.85rem',
-                    border: '1px solid var(--border)', background: 'var(--background)',
-                    borderRadius: 'var(--radius)', cursor: 'pointer', color: 'var(--muted-foreground)',
-                  }}
-                >
-                  Borrar historial
+                  {fetching ? 'Actualizando...' : cooldownRemaining > 0 ? `Espera ${formatCooldown(cooldownRemaining)}` : 'Actualizar ahora'}
                 </button>
               </div>
+              {cooldownRemaining > 0 && (
+                <div style={{ textAlign: 'center', marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--muted-foreground)' }}>
+                  ⏳ Puedes volver a actualizar en {formatCooldown(cooldownRemaining)}
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
