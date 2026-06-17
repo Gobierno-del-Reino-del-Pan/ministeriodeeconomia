@@ -2,6 +2,7 @@ import { Link } from 'wouter';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import NewsTickerBar from '../components/NewsTickerBar';
+import { useState } from 'react';
 
 const DESTACADOS = [
   { tag: 'Comercio Exterior', title: 'Programa de Apoyo a la Exportación 2026', desc: 'El Ministerio pone en marcha una línea de financiación de 12 millones de PAN para empresas que inicien actividad exportadora.', href: '/comercio/exportaciones', date: '10 jun. 2026' },
@@ -10,62 +11,165 @@ const DESTACADOS = [
 ];
 
 const ACCESOS = [
-  { icon: '📋', label: 'Trámites y Gestiones',  href: '/lpb/tramites',        desc: 'Solicitudes, licencias y registros' },
-  { icon: '📰', label: 'Boletín Oficial',        href: '/boe',                 desc: 'Legislación y disposiciones oficiales' },
-  { icon: '📊', label: 'Estadísticas',           href: '/empleo/estadisticas', desc: 'Datos económicos y de empleo' },
-  { icon: '🌐', label: 'Comercio Exterior',      href: '/comercio',            desc: 'Exportaciones e inversiones' },
-  { icon: '🏛️', label: 'El Ministerio',          href: '/ministerio',          desc: 'Organización y competencias' },
-  { icon: '🏦', label: 'LPB',                    href: '/lpb',                  desc: 'Laboral Panien Bank' },
+  {
+    icon: '📋',
+    label: 'Trámites y Gestiones',
+    href: '/lpb/tramites',
+    desc: 'Solicitudes, licencias y registros',
+    detail: 'Accede a la oficina virtual para realizar solicitudes de licencias, presentar registros oficiales, iniciar expedientes administrativos y realizar gestiones con el Ministerio de manera 100% digital.'
+  },
+  {
+    icon: '📰',
+    label: 'Boletín Oficial',
+    href: '/boe',
+    desc: 'Legislación y disposiciones oficiales',
+    detail: 'Consulta las leyes, reales decretos, resoluciones de órganos superiores, anuncios y otras disposiciones del Reino del Pan publicadas de manera oficial en el Boletín Oficial del Estado (BOE).'
+  },
+  {
+    icon: '📊',
+    label: 'Estadísticas',
+    href: '/empleo/estadisticas',
+    desc: 'Datos económicos y de empleo',
+    detail: 'Consulta los indicadores socioeconómicos actuales elaborados por el INEP, como las tasas históricas de empleo, el crecimiento sectorial, el índice de precios al consumo y estadísticas mercantiles.'
+  },
+  {
+    icon: '🌐',
+    label: 'Comercio Exterior',
+    href: '/comercio',
+    desc: 'Exportaciones e inversiones',
+    detail: 'Explora los convenios y tratados bilaterales vigentes, el marco normativo de las inversiones extranjeras directas, y los programas del Gobierno para potenciar la exportación de las empresas panienses.'
+  },
+  {
+    icon: '🏛️',
+    label: 'El Ministerio',
+    href: '/ministerio',
+    desc: 'Organización y competencias',
+    detail: 'Infórmate acerca del organigrama, el equipo directivo, las secretarías de estado y la agenda pública. Encuentra comunicados de prensa y la agenda de comparecencias de los portavoces del departamento.'
+  },
+  {
+    icon: '🏦',
+    label: 'LPB',
+    href: '/lpb',
+    desc: 'Laboral Panien Bank',
+    detail: 'Entra a la banca pública del Reino del Pan. Gestiona tus depósitos, solicita líneas de préstamo para el fomento empresarial y laboral, realiza transferencias instantáneas y maneja tu cuenta ciudadana.'
+  },
 ];
 
 const STATS = [
-  { num: '3,2 %',  label: 'Tasa de desempleo',      sub: '2.º trimestre 2026' },
-  { num: '+18 %',  label: 'Exportaciones',           sub: 'Crecimiento interanual' },
-  { num: '47',     label: 'Acuerdos comerciales',    sub: 'Vigentes y en negociación' },
-  { num: '1.200',  label: 'Empresas registradas',    sub: 'En el Registro Mercantil' },
+  { num: '3,2 %', label: 'Tasa de desempleo', sub: '2.º trimestre 2026' },
+  { num: '+18 %', label: 'Exportaciones', sub: 'Crecimiento interanual' },
+  { num: '47', label: 'Acuerdos comerciales', sub: 'Vigentes y en negociación' },
+  { num: '1.200', label: 'Empresas registradas', sub: 'En el Registro Mercantil' },
 ];
 
 export default function Home() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
       <NewsTickerBar />
 
       {/* HERO */}
-      <section style={{ background: 'linear-gradient(135deg, #091f42 0%, #0F326A 55%, #1a4a9e 100%)', color: '#fff', padding: '4rem 0 3rem', position: 'relative', overflow: 'hidden', borderBottom: '3px solid var(--gold)' }}>
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.04, backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4z' fill='%23fff'/%3E%3C/svg%3E\")" }} />
-        <div className="container" style={{ position: 'relative' }}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gold-light)', display: 'block', marginBottom: '1rem' }}>
+      <section style={{ position: 'relative', overflow: 'hidden', padding: '6rem 0 5rem', borderBottom: '3px solid var(--gold)', minHeight: '380px', display: 'flex', alignItems: 'center', color: '#fff' }}>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1,
+          }}
+        >
+          <source src="/heroEconomia.mp4" type="video/mp4" />
+        </video>
+        {/* Capa de atenuación para que sea más visible el texto */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(135deg, rgba(13, 17, 23, 0.85) 0%, rgba(15, 31, 66, 0.75) 50%, rgba(151, 180, 224, 0.45) 100%)',
+            zIndex: 2,
+          }}
+        />
+        <div className="container" style={{ position: 'relative', zIndex: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            fontSize: '0.7rem',
+            fontWeight: 800,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: '#ffffff',
+            background: 'rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            padding: '0.4rem 1rem',
+            borderRadius: '9999px',
+            marginBottom: '1.25rem'
+          }}>
             Gobierno del Reino del Pan
           </span>
-          <h1 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(2rem, 5vw, 3.2rem)', color: '#ffffff', maxWidth: '700px', marginBottom: '1.25rem', lineHeight: 1.2 }}>
+          <h1 className="home-hero-title">
             Ministerio de Economía,<br />Comercio y Empresa
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.78)', maxWidth: '520px', fontSize: '1rem', lineHeight: 1.7, marginBottom: '2rem' }}>
+          <p style={{
+            color: 'rgba(255,255,255,0.95)',
+            maxWidth: '620px',
+            fontSize: '1.15rem',
+            lineHeight: 1.75,
+            marginBottom: '2.5rem',
+            textShadow: '0 2px 12px rgba(0,0,0,0.5)',
+          }}>
             Impulsamos el crecimiento económico, el comercio sostenible y el empleo de calidad en el Reino del Pan.
           </p>
-          <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link href="/lpb/tramites" className="btn btn-gold">Iniciar un trámite</Link>
-            <Link href="/ministerio" className="btn btn-outline" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.45)' }}>Conocer el Ministerio</Link>
+            <Link href="/ministerio" className="btn btn-outline" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.6)' }}>Conocer el Ministerio</Link>
           </div>
         </div>
       </section>
 
-      {/* ACCESOS DIRECTOS */}
-      <section style={{ background: '#ffffff', borderBottom: '1px solid var(--border)', padding: '2.5rem 0' }}>
+      <section style={{ background: 'var(--background)', borderBottom: '1px solid var(--border)', padding: '4rem 0' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '1rem' }}>
-            {ACCESOS.map((a) => (
-              <Link key={a.href} href={a.href}>
-                <div style={{ background: 'var(--background)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '1.25rem 1rem', textAlign: 'center', transition: 'all 200ms', cursor: 'pointer' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--primary)'; (e.currentTarget as HTMLElement).style.background = 'var(--secondary)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.background = 'var(--background)'; }}>
-                  <div style={{ fontSize: '1.6rem', marginBottom: '0.5rem' }}>{a.icon}</div>
-                  <div style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--primary)', marginBottom: '0.25rem' }}>{a.label}</div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--muted-foreground)', lineHeight: 1.4 }}>{a.desc}</div>
+          <div className="interactive-access-dashboard">
+            <div className="selector-list">
+              {ACCESOS.map((a, i) => (
+                <div
+                  key={a.href}
+                  onMouseEnter={() => setActiveIndex(i)}
+                  className={`selector-item ${activeIndex === i ? 'active' : ''}`}
+                >
+                  <div className="selector-item-icon">{a.icon}</div>
+                  <div className="selector-item-content">
+                    <h4 className="selector-item-title">{a.label}</h4>
+                    <p className="selector-item-desc">{a.desc}</p>
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            <div className="preview-panel">
+              <div className="preview-icon-glow">
+                {ACCESOS[activeIndex].icon}
+              </div>
+              <span className="preview-tag">Sección del Portal</span>
+              <h3 className="preview-title">{ACCESOS[activeIndex].label}</h3>
+              <p className="preview-desc">
+                {ACCESOS[activeIndex].detail}
+              </p>
+              <Link href={ACCESOS[activeIndex].href} className="btn btn-primary preview-btn">
+                <span>Ingresar a la sección</span>
+                <span className="arrow">→</span>
               </Link>
-            ))}
+            </div>
           </div>
         </div>
       </section>
@@ -121,7 +225,7 @@ export default function Home() {
             <h2 style={{ fontFamily: 'var(--display-font)', fontSize: '1.4rem' }}>Últimas disposiciones — BOE</h2>
             <Link href="/boe" style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>Ir al BOE →</Link>
           </div>
-          <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(16px)', border: '1px solid rgba(151, 180, 224, 0.2)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: '0 4px 15px rgba(151, 180, 224, 0.03)' }}>
             <table className="boe-table">
               <thead>
                 <tr><th>Referencia</th><th>Título</th><th>Sección</th><th>Fecha</th></tr>

@@ -18,7 +18,7 @@ export default function ComercioIndex() {
       heroSubtitle="El Ministerio impulsa un comercio sostenible, competitivo e integrado en los mercados internacionales."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="Comercio" items={SIDE} />
           <div>
             <p style={{ color: 'var(--muted-foreground)', lineHeight: 1.75, marginBottom: '1.5rem' }}>

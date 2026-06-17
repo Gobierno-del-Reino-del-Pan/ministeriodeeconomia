@@ -4,6 +4,7 @@ const ITEMS = [
   'El índice de desempleo se sitúa en el 3,2% en el segundo trimestre de 2026',
   'Nuevo acuerdo de cooperación económica con la Alianza de Naciones Libres',
   'Aprobado el Reglamento de Inversiones Extranjeras en el Reino del Pan',
+  'socorro',
 ];
 
 export default function NewsTickerBar() {

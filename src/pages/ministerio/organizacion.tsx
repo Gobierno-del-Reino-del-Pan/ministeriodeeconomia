@@ -46,7 +46,7 @@ export default function Organizacion() {
       heroSubtitle="Estructura orgánica del Ministerio, de conformidad con el Real Decreto de Organización del Gobierno del Reino del Pan."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="El Ministerio" items={SIDE} />
           <div>
             <h2 style={{ fontFamily: 'var(--display-font)', fontSize: '1.4rem', marginBottom: '1.5rem' }}>Estructura orgánica</h2>

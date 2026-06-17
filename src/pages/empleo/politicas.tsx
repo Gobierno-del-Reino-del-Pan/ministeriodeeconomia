@@ -23,7 +23,7 @@ export default function Politicas() {
       heroTitle="Políticas Activas de Empleo"
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="Empleo" items={SIDE} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {PLANES.map((p, i) => (

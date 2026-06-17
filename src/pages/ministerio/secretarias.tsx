@@ -36,7 +36,7 @@ export default function Secretarias() {
       heroSubtitle="Los órganos superiores del Ministerio responsables de la dirección y coordinación de cada área de actuación."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="El Ministerio" items={SIDE} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {SECS.map((s, i) => (

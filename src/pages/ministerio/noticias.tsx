@@ -26,7 +26,7 @@ export default function NoticiasPage() {
       heroSubtitle="Comunicados, notas de prensa y noticias institucionales del Ministerio."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="El Ministerio" items={SIDE} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {NOTICIAS.map((n, i) => (

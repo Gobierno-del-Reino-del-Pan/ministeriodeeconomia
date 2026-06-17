@@ -17,7 +17,7 @@ export default function Exportaciones() {
       heroSubtitle="Instrumentos y programas del Gobierno para apoyar la internacionalización de las empresas del Reino del Pan."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="Comercio" items={SIDE} />
           <div>
             <h2 style={{ fontFamily: 'var(--display-font)', fontSize: '1.4rem', marginBottom: '1rem' }}>Programa de Apoyo a la Exportación 2026</h2>

@@ -19,7 +19,7 @@ export default function MinisterioIndex() {
       heroSubtitle="El Ministerio de Economía, Comercio y Empresa es el departamento del Gobierno del Reino del Pan responsable de la política económica, la regulación del comercio y el fomento del empleo."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="El Ministerio" items={SIDE} />
 
           <div>

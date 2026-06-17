@@ -26,7 +26,7 @@ export default function Estadisticas() {
       heroSubtitle="Datos oficiales elaborados por el Instituto Nacional de Estadística Paniense (INEP)."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="Empleo" items={SIDE} />
           <div>
             <div className="alert alert-info" style={{ marginBottom: '2rem' }}>

@@ -24,11 +24,11 @@ export default function PageLayout({ crumbs = [], heroTag, heroTitle, heroSubtit
       <div className="page-hero">
         <div className="container">
           {heroTag && <span className="page-hero-tag">{heroTag}</span>}
-          <h1 style={{ fontSize: 'clamp(1.6rem, 4vw, 2.6rem)', color: '#ffffff', maxWidth: '680px' }}>
+          <h1 className="page-hero-title">
             {heroTitle}
           </h1>
           {heroSubtitle && (
-            <p style={{ color: 'rgba(255,255,255,0.75)', marginTop: '0.6rem', maxWidth: '560px', fontSize: '0.95rem', lineHeight: 1.65 }}>
+            <p className="page-hero-subtitle">
               {heroSubtitle}
             </p>
           )}

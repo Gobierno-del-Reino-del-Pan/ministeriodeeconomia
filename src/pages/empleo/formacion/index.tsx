@@ -18,7 +18,7 @@ export default function Formacion() {
       heroSubtitle="El sistema de formación para el empleo mejora la cualificación de los trabajadores y facilita su empleabilidad."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="Empleo" items={SIDE} />
           <div>
             <p style={{ color: 'var(--muted-foreground)', lineHeight: 1.75, marginBottom: '1.5rem' }}>

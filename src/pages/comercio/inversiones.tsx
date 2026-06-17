@@ -17,7 +17,7 @@ export default function Inversiones() {
       heroSubtitle="El Reino del Pan ofrece un marco jurídico estable, transparente y atractivo para la inversión exterior."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="Comercio" items={SIDE} />
           <div>
             <p style={{ color: 'var(--muted-foreground)', lineHeight: 1.75, marginBottom: '1.5rem' }}>
@@ -25,7 +25,7 @@ export default function Inversiones() {
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginTop: '1.5rem' }}>
               {[
-                { label: 'Inversión acumulada', valor: '€ 2,3 M', sub: 'Comprometida en 2026' },
+                { label: 'Inversión acumulada', valor: '2.300.000 €', sub: 'Comprometida en 2026' },
                 { label: 'Proyectos activos', valor: '14', sub: 'En distintos sectores' },
                 { label: 'Países inversores', valor: '9', sub: 'Con relación activa' },
               ].map((s, i) => (

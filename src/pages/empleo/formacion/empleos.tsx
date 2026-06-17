@@ -28,7 +28,7 @@ const TRABAJOS = [
   {
     cargo: 'Médico',
     funcion: 'Asegurar que se mantenga el buen estado de salud de los ciudadanos.',
-    salario: '3.7K',
+    salario: '3,7K',
   },
   {
     cargo: 'Profesor',
@@ -43,12 +43,12 @@ const TRABAJOS = [
   {
     cargo: 'Futbolista',
     funcion: 'Ganar partidos (con la necesidad de formar un equipo).',
-    salario: '9.1K',
+    salario: '9,1K',
   },
   {
     cargo: 'Político',
     funcion: 'Buscar el bienestar de los ciudadanos (y, opcionalmente, el propio). Fundar, construir, hacer.',
-    salario: '5.2K',
+    salario: '5,2K',
   },
   {
     cargo: 'Veterinario',
@@ -79,7 +79,7 @@ export default function Ofertas() {
       heroSubtitle="Relación de puestos de trabajo disponibles en la administración y servicios públicos."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="Empleo" items={SIDE} />
           <div>
             <p style={{ color: 'var(--muted-foreground)', marginBottom: '1.5rem' }}>

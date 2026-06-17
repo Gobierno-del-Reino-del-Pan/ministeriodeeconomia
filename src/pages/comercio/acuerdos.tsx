@@ -23,7 +23,7 @@ export default function Acuerdos() {
       heroTitle="Acuerdos Comerciales"
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="Comercio" items={SIDE} />
           <div>
             <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>

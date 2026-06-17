@@ -18,7 +18,7 @@ export default function EmpleoIndex() {
       heroSubtitle="El Ministerio garantiza el derecho al trabajo de calidad de todos los ciudadanos del Reino del Pan."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="Empleo" items={SIDE} />
           <div>
             <p style={{ color: 'var(--muted-foreground)', lineHeight: 1.75, marginBottom: '2rem' }}>

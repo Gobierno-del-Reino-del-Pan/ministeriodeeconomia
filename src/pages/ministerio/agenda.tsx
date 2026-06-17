@@ -25,7 +25,7 @@ export default function AgendaPage() {
       heroSubtitle="Actos, comparecencias y eventos oficiales del Ministerio."
     >
       <div className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="container subpage-grid">
           <SideNav title="El Ministerio" items={SIDE} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {EVENTOS.map((e, i) => (
