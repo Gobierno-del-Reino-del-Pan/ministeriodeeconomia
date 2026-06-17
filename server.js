@@ -257,7 +257,7 @@ async function bootstrap() {
 
     const { data, error } = await sb
       .from('gobierno')
-      .select('id, name, balance, updated_at')
+      .select('id, name, balance, created_at')
       .eq('is_public', true);
 
     if (error) {
