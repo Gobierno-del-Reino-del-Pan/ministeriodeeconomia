@@ -92,7 +92,7 @@ export default function LpbTramites() {
       description: 'Línea de financiación para empresas de nueva creación (similar a las líneas ICO). Orden ECE/118/2026.',
       status: 'available' as const,
       href: '/lpb/tramites/creditos-icorp',
-      highlights: ['Financiación empresarial', 'Interés competitivo', 'Hasta 100.000 panedas'],
+      highlights: ['Financiación empresarial', 'Interés competitivo', 'Hasta 750.000 panedas'],
     },
     {
       icon: '🎂',
@@ -101,6 +101,14 @@ export default function LpbTramites() {
       status: 'available' as const,
       href: '/lpb/tramites/bono-masa-joven',
       highlights: ['15.200 panedas de ayuda', '18 años o más', 'Un uso por ciudadano'],
+    },
+    {
+      icon: '🏢',
+      title: 'Crear Empresa',
+      description: 'Registra tu empresa en el Reino del Pan. Coste: 750.000 panedas.',
+      status: 'available' as const,
+      href: '/lpb/tramites/crear-empresa',
+      highlights: ['750.000 panedas de registro', 'Gestión de tienda', 'Productos ilimitados'],
     },
   ];
 

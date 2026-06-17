@@ -72,7 +72,7 @@ export default function LpbCreditosICORP() {
               <h4 style={{ marginBottom: '0.75rem', fontSize: '0.95rem' }}>Condiciones del crédito</h4>
               <ul style={{ paddingLeft: '1.25rem', fontSize: '0.9rem', margin: 0 }}>
                 <li>El crédito se concede con un <strong>interés competitivo</strong> que se fijará en función del riesgo y las condiciones del mercado.</li>
-                <li>El importe máximo del crédito será de hasta <strong>100.000 panedas</strong> (sujeto a evaluación del ICORP).</li>
+                <li>El importe máximo del crédito será de hasta <strong>750.000 panedas</strong> (sujeto a evaluación del ICORP).</li>
                 <li>El plazo de amortización se determinará en las bases reguladoras del ICORP.</li>
                 <li>Las empresas deberán presentar un <strong>plan de negocio</strong> y proyecciones financieras.</li>
                 <li>La devolución se realizará mediante cuotas periódicas, con posibilidad de carencia inicial.</li>

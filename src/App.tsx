@@ -26,6 +26,8 @@ import LpbTransferencia from './pages/lpb/transferencia';
 import LpbTramites from './pages/lpb/tramites';
 import LpbCreditosICORP from './pages/lpb/creditos-icorp';
 import LpbBonoMasaJoven from './pages/lpb/bono-masa-joven';
+import LpbCrearEmpresa from './pages/lpb/crear-empresa';
+import LpbEmpresa from './pages/lpb/empresa';
 
 // Legal
 import Accesibilidad from './pages/legal/accesibilidad';
@@ -65,6 +67,8 @@ export default function App() {
       <Route path="/lpb/tramites" component={LpbTramites} />
       <Route path="/lpb/tramites/creditos-icorp" component={LpbCreditosICORP} />
       <Route path="/lpb/tramites/bono-masa-joven" component={LpbBonoMasaJoven} />
+      <Route path="/lpb/tramites/crear-empresa" component={LpbCrearEmpresa} />
+      <Route path="/lpb/empresa" component={LpbEmpresa} />
       {/* Legal */}
       <Route path="/accesibilidad" component={Accesibilidad} />
       <Route path="/aviso-legal" component={AvisoLegal} />

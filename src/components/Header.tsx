@@ -23,6 +23,7 @@ const NAV = [
       { label: 'Exportaciones',      href: '/comercio/exportaciones' },
       { label: 'Inversiones',        href: '/comercio/inversiones' },
       { label: 'Acuerdos',           href: '/comercio/acuerdos' },
+      { label: 'PIB',                 href: '/comercio/indicadores' },
     ],
   },
   {
