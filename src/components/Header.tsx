@@ -157,7 +157,7 @@ export default function Header() {
                   <>
                     <Link
                       href="/lpb"
-                      className={`px-3.5 py-1.5 uppercase tracking-[0.16em] text-[11px] font-bold transition-all duration-300 whitespace-nowrap rounded-full ${
+                      className={`hidden sm:inline-flex px-3.5 py-1.5 uppercase tracking-[0.16em] text-[11px] font-bold transition-all duration-300 whitespace-nowrap rounded-full ${
                         isLpbActive
                           ? "text-neutral-900 bg-[#97b4e0]/25 font-extrabold"
                           : "text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100/70"
@@ -177,7 +177,7 @@ export default function Header() {
                 ) : (
                   <a
                     href="/auth/discord"
-                    className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap cursor-pointer px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.16em]
+                    className="hidden sm:inline-flex items-center gap-2 shrink-0 whitespace-nowrap cursor-pointer px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.16em]
                       border border-[#97b4e0]/30 text-neutral-800 bg-[#97b4e0]/10
                       transition-all duration-300 hover:bg-[#97b4e0] hover:text-neutral-950 hover:shadow-[0_0_20px_rgba(151,180,224,0.4)] active:scale-[0.98]"
                   >
@@ -204,9 +204,9 @@ export default function Header() {
 
       {/* MENÚ LATERAL / DESPLEGABLE MÓVIL */}
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 pt-[73px]">
+        <div className="lg:hidden fixed inset-0 z-40 pt-[70px]">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { setMobileOpen(false); }} />
-          <div className="relative bg-white/95 backdrop-blur-xl border-b border-neutral-200 shadow-2xl overflow-y-auto max-h-[calc(100vh-73px)] animate-in slide-in-from-top duration-200">
+          <div className="relative bg-white/95 backdrop-blur-xl border-b border-neutral-200 shadow-2xl overflow-y-auto max-h-[calc(100vh-70px)] animate-in slide-in-from-top duration-200">
             <nav className="container mx-auto px-5 py-6 flex flex-col gap-3">
               {NAV.map((item) => {
                 const isParentActive = item.href === "/"

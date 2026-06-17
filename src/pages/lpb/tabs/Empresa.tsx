@@ -597,7 +597,7 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div className="product-form-grid" style={{ marginBottom: '1rem' }}>
               <div>
                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem' }}>Precio (🪙) <span style={{ color: 'var(--error)' }}>*</span></label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -807,31 +807,35 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
         ) : (
           <div style={{ display: 'grid', gap: '0.75rem' }}>
             {productos.map(prod => (
-              <div key={prod.id} className="card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <span style={{ fontSize: '1.5rem' }}>{prod.emoji}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{prod.name}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
-                    ID: {prod.product_id} · {prod.category} {prod.stackable ? '· Apilable' : ''}
+              <div key={prod.id} className="card lpb-product-item">
+                <div className="lpb-product-header">
+                  <span style={{ fontSize: '1.5rem' }}>{prod.emoji}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{prod.name}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
+                      ID: {prod.product_id} · {prod.category} {prod.stackable ? '· Apilable' : ''}
+                    </div>
+                    {prod.description && (
+                      <div style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', marginTop: '0.15rem' }}>{prod.description}</div>
+                    )}
                   </div>
-                  {prod.description && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', marginTop: '0.15rem' }}>{prod.description}</div>
-                  )}
                 </div>
-                <div style={{ fontWeight: 600, color: 'var(--gold)', whiteSpace: 'nowrap' }}>{fmt(prod.price)} 🪙</div>
-                <div style={{ display: 'flex', gap: '0.4rem' }}>
-                  <button
-                    onClick={() => startEditProduct(prod)}
-                    style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--background)', cursor: 'pointer' }}
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    onClick={() => handleDeleteProduct(prod)}
-                    style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', border: '1px solid var(--error)', borderRadius: 'var(--radius)', background: 'var(--background)', color: 'var(--error)', cursor: 'pointer' }}
-                  >
-                    🗑️
-                  </button>
+                <div className="lpb-product-footer">
+                  <div style={{ fontWeight: 600, color: 'var(--gold)', whiteSpace: 'nowrap' }}>{fmt(prod.price)} 🪙</div>
+                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                    <button
+                      onClick={() => startEditProduct(prod)}
+                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--background)', cursor: 'pointer' }}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(prod)}
+                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', border: '1px solid var(--error)', borderRadius: 'var(--radius)', background: 'var(--background)', color: 'var(--error)', cursor: 'pointer' }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

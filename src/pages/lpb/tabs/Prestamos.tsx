@@ -26,8 +26,7 @@ export default function TabPrestamos({ prestamos, discordId }: { prestamos: Pres
           </div>
           <StatusBadge status={p.status} />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '0.75rem' }}>
-          {[
+        <div className="lpb-prestamos-grid" style={{ marginBottom: '0.75rem' }}>          {[
             { label: 'Capital',        value: fmt(p.amount) + ' 🪙' },
             { label: 'Total a pagar',  value: fmt(p.total_amount) + ' 🪙' },
             { label: 'Cuota diaria',   value: fmt(p.daily_payment) + ' 🪙' },

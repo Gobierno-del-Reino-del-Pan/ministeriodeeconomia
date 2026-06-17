@@ -9,15 +9,15 @@ const ITEMS = [
 
 export default function NewsTickerBar() {
   return (
-    <div className="news-ticker" style={{ display: 'flex', height: '32px', alignItems: 'center', overflow: 'hidden' }}>
+    <div className="news-ticker">
       <div className="news-ticker-label">
-        Actualidad
+        <span>&gt;</span> Actualidad
       </div>
       <div style={{ overflow: 'hidden', flex: 1, position: 'relative' }}>
         <div className="ticker-track" style={{ display: 'flex', gap: '5rem', whiteSpace: 'nowrap', cursor: 'default' }}>
           <span style={{ display: 'flex', gap: '5rem', flexShrink: 0 }}>
             {ITEMS.map((item, i) => (
-              <span key={'a-' + i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
+              <span key={'a-' + i} className="news-ticker-item" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
                 <span style={{ color: 'var(--gold)', fontSize: '0.6rem' }}>◆</span>
                 {item}
               </span>
@@ -26,7 +26,7 @@ export default function NewsTickerBar() {
           {/* Duplicado para bucle continuo */}
           <span aria-hidden="true" style={{ display: 'flex', gap: '5rem', flexShrink: 0 }}>
             {ITEMS.map((item, i) => (
-              <span key={'b-' + i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
+              <span key={'b-' + i} className="news-ticker-item" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
                 <span style={{ color: 'var(--gold)', fontSize: '0.6rem' }}>◆</span>
                 {item}
               </span>

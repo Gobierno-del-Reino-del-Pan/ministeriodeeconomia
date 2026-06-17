@@ -264,8 +264,7 @@ export default function LpbLayout({ children }: Props) {
             </button>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '0' }}>
-            {TABS.map(tab => (
+          <div className="lpb-tabs-container" style={{ marginBottom: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '0' }}>            {TABS.map(tab => (
               <Link key={tab.key} to={tab.path}>
                 <a
                   style={{
