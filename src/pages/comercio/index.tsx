@@ -7,6 +7,7 @@ const SIDE = [
   { label: 'Exportaciones', href: '/comercio/exportaciones' },
   { label: 'Inversiones Extranjeras', href: '/comercio/inversiones' },
   { label: 'Acuerdos Comerciales', href: '/comercio/acuerdos' },
+  { label: 'PIB', href: '/comercio/indicadores' },
 ];
 
 export default function ComercioIndex() {
@@ -22,21 +23,11 @@ export default function ComercioIndex() {
           <SideNav title="Comercio" items={SIDE} />
           <div>
             <p style={{ color: 'var(--muted-foreground)', lineHeight: 1.75, marginBottom: '1.5rem' }}>
-              La política comercial del Reino del Pan se orienta a la apertura de mercados, la defensa de la competencia leal y el impulso a las empresas panienses en el exterior. La Secretaría de Estado de Comercio coordina estas actuaciones con los organismos internacionales y los socios estratégicos del Reino.
+              La política comercial del Reino del Pan se orienta a la apertura de mercados, la defensa de la competencia leal y el impulso a las empresas panienses en el exterior.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
-              {[
-                { href: '/comercio/exportaciones', label: 'Exportaciones', desc: 'Programas de apoyo y financiación a la exportación.' },
-                { href: '/comercio/inversiones',   label: 'Inversiones',   desc: 'Marco regulatorio para la inversión extranjera.' },
-                { href: '/comercio/acuerdos',      label: 'Acuerdos',      desc: 'Tratados y convenios comerciales vigentes.' },
-              ].map((c) => (
-                <Link key={c.href} href={c.href}>
-                  <div className="card card-featured">
-                    <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '1rem', marginBottom: '0.4rem' }}>{c.label}</h3>
-                    <p style={{ fontSize: '0.82rem', color: 'var(--muted-foreground)', margin: 0 }}>{c.desc}</p>
-                  </div>
-                </Link>
-              ))}
+            <div className="alert alert-warning" style={{ marginBottom: '1.5rem' }}>
+              <span>📢</span>
+              <span>Esta sección se encuentra en fase de desarrollo. Próximamente se publicará información detallada sobre los programas y acuerdos comerciales del Reino.</span>
             </div>
           </div>
         </div>

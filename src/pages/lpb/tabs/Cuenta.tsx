@@ -1,3 +1,4 @@
+import { Link } from 'wouter';
 import { Economy, DashboardUser } from '../../../lib/lpb/types';
 
 function fmt(n: number) {
@@ -19,7 +20,8 @@ export default function TabCuenta({ economy, user }: { economy: Economy | null; 
   }
 
   const total = (economy.cash ?? 0) + (economy.bank ?? 0);
-  const inventoryEntries = economy.inventory ? Object.entries(economy.inventory).filter(([, v]) => (v as number) > 0) : [];
+  const inventoryItems = economy.inventory || [];
+  const inventoryCount = inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div>
@@ -66,22 +68,43 @@ export default function TabCuenta({ economy, user }: { economy: Economy | null; 
         </div>
       </div>
 
-      {/* inventario */}
-      {inventoryEntries.length > 0 && (
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <h3 style={{ fontFamily: 'var(--display-font)', marginBottom: '1rem', fontSize: '1rem' }}>Inventario</h3>
+      {/* inventario resumen */}
+      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+          <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '1rem', margin: 0 }}>Inventario</h3>
+          <Link to="/lpb/inventario" style={{ fontSize: '0.85rem', color: 'var(--gold)', textDecoration: 'underline', fontWeight: 600 }}>
+            Ver todo →
+          </Link>
+        </div>
+        {inventoryItems.length > 0 ? (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {inventoryEntries.map(([item, qty]) => (
-              <span key={item} style={{
+            {inventoryItems.slice(0, 6).map((item) => (
+              <span key={item.inventory_id} style={{
                 padding: '0.3rem 0.75rem', borderRadius: '999px',
                 background: 'var(--muted)', fontSize: '0.85rem', fontWeight: 600,
+                display: 'flex', alignItems: 'center', gap: '0.25rem',
               }}>
-                {item} <span style={{ color: 'var(--gold)' }}>×{qty as number}</span>
+                {item.emoji} {item.name} <span style={{ color: 'var(--gold)' }}>×{item.quantity}</span>
               </span>
             ))}
+            {inventoryItems.length > 6 && (
+              <span style={{
+                padding: '0.3rem 0.75rem', borderRadius: '999px',
+                background: 'var(--muted)', fontSize: '0.85rem', color: 'var(--muted-foreground)',
+              }}>
+                +{inventoryItems.length - 6} más
+              </span>
+            )}
           </div>
+        ) : (
+          <p style={{ color: 'var(--muted-foreground)', fontSize: '0.9rem', margin: 0 }}>
+            Tu inventario está vacío. Visita la tienda en Discord para comprar objetos.
+          </p>
+        )}
+        <div style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
+          {inventoryCount} objetos en total
         </div>
-      )}
+      </div>
     </div>
   );
 }

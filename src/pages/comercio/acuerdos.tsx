@@ -6,13 +6,7 @@ const SIDE = [
   { label: 'Exportaciones', href: '/comercio/exportaciones' },
   { label: 'Inversiones Extranjeras', href: '/comercio/inversiones' },
   { label: 'Acuerdos Comerciales', href: '/comercio/acuerdos' },
-];
-
-const ACUERDOS = [
-  { titulo: 'Acuerdo Marco de Libre Comercio con la Alianza del Norte', estado: 'Vigor', fecha: 'Mar. 2026' },
-  { titulo: 'Convenio de Cooperación Económica — Unión de Repúblicas del Sur', estado: 'Vigor', fecha: 'Ene. 2026' },
-  { titulo: 'Memorando de Entendimiento en materia aduanera con Veldoria', estado: 'Negociación', fecha: 'En curso' },
-  { titulo: 'Protocolo de Inversiones con el Bloque Atlántico', estado: 'Ratificación', fecha: 'Jun. 2026' },
+  { label: 'PIB', href: '/comercio/indicadores' },
 ];
 
 export default function Acuerdos() {
@@ -26,29 +20,9 @@ export default function Acuerdos() {
         <div className="container subpage-grid">
           <SideNav title="Comercio" items={SIDE} />
           <div>
-            <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
-              <table className="boe-table">
-                <thead>
-                  <tr>
-                    <th>Acuerdo</th>
-                    <th>Estado</th>
-                    <th>Fecha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ACUERDOS.map((a, i) => (
-                    <tr key={i}>
-                      <td style={{ fontWeight: 500 }}>{a.titulo}</td>
-                      <td>
-                        <span className={'tag ' + (a.estado === 'Vigor' ? 'tag-primary' : a.estado === 'Negociación' ? '' : 'tag-gold')}>
-                          {a.estado}
-                        </span>
-                      </td>
-                      <td>{a.fecha}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="alert alert-warning" style={{ marginBottom: '1.5rem' }}>
+              <span>📢</span>
+              <span>No hay acuerdos comerciales firmados en este momento. Esta sección se actualizará cuando se formalicen nuevos tratados.</span>
             </div>
           </div>
         </div>

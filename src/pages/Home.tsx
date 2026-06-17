@@ -4,12 +4,6 @@ import Footer from '../components/Footer';
 import NewsTickerBar from '../components/NewsTickerBar';
 import { useState } from 'react';
 
-const DESTACADOS = [
-  { tag: 'Comercio Exterior', title: 'Programa de Apoyo a la Exportación 2026', desc: 'El Ministerio pone en marcha una línea de financiación de 12 millones de PAN para empresas que inicien actividad exportadora.', href: '/comercio/exportaciones', date: '10 jun. 2026' },
-  { tag: 'Empleo', title: 'Plan Nacional de Empleo Juvenil', desc: 'Nuevas medidas para reducir el desempleo entre menores de 30 años, con incentivos fiscales a empresas contratantes.', href: '/empleo/politicas', date: '5 jun. 2026' },
-  { tag: 'Normativa', title: 'Reglamento de Comercio Interior aprobado', desc: 'El Consejo de Ministros aprueba el primer Reglamento de Comercio Interior del Reino del Pan, publicado en el BOE.', href: '/boe', date: '28 may. 2026' },
-];
-
 const ACCESOS = [
   {
     icon: '📋',
@@ -17,13 +11,6 @@ const ACCESOS = [
     href: '/lpb/tramites',
     desc: 'Solicitudes, licencias y registros',
     detail: 'Accede a la oficina virtual para realizar solicitudes de licencias, presentar registros oficiales, iniciar expedientes administrativos y realizar gestiones con el Ministerio de manera 100% digital.'
-  },
-  {
-    icon: '📰',
-    label: 'Boletín Oficial',
-    href: '/boe',
-    desc: 'Legislación y disposiciones oficiales',
-    detail: 'Consulta las leyes, reales decretos, resoluciones de órganos superiores, anuncios y otras disposiciones del Reino del Pan publicadas de manera oficial en el Boletín Oficial del Estado (BOE).'
   },
   {
     icon: '📊',
@@ -55,13 +42,6 @@ const ACCESOS = [
   },
 ];
 
-const STATS = [
-  { num: '3,2 %', label: 'Tasa de desempleo', sub: '2.º trimestre 2026' },
-  { num: '+18 %', label: 'Exportaciones', sub: 'Crecimiento interanual' },
-  { num: '47', label: 'Acuerdos comerciales', sub: 'Vigentes y en negociación' },
-  { num: '1.200', label: 'Empresas registradas', sub: 'En el Registro Mercantil' },
-];
-
 export default function Home() {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -90,7 +70,6 @@ export default function Home() {
         >
           <source src="/heroEconomia.mp4" type="video/mp4" />
         </video>
-        {/* Capa de atenuación para que sea más visible el texto */}
         <div
           style={{
             position: 'absolute',
@@ -170,98 +149,6 @@ export default function Home() {
                 <span className="arrow">→</span>
               </Link>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* NOTICIAS */}
-      <section className="section">
-        <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1.75rem' }}>
-            <h2 style={{ fontFamily: 'var(--display-font)', fontSize: '1.5rem', color: 'var(--foreground)' }}>Actualidad del Ministerio</h2>
-            <Link href="/ministerio/noticias" style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>Ver todas las noticias →</Link>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-            {DESTACADOS.map((n, i) => (
-              <Link key={i} href={n.href}>
-                <article className="card card-featured" style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <span className="tag tag-primary">{n.tag}</span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--muted-foreground)' }}>{n.date}</span>
-                  </div>
-                  <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '1.05rem', color: 'var(--foreground)', lineHeight: 1.35 }}>{n.title}</h3>
-                  <p style={{ fontSize: '0.83rem', color: 'var(--muted-foreground)', lineHeight: 1.65, margin: 0, flex: 1 }}>{n.desc}</p>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 600 }}>Leer más →</span>
-                </article>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ESTADÍSTICAS */}
-      <section className="section section-alt">
-        <div className="container">
-          <h2 style={{ fontFamily: 'var(--display-font)', fontSize: '1.4rem', marginBottom: '1.75rem' }}>Indicadores económicos</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '1.25rem' }}>
-            {STATS.map((s, i) => (
-              <div key={i} className="stat-card">
-                <div className="stat-number">{s.num}</div>
-                <div className="stat-label">{s.label}</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--muted-foreground)', marginTop: '0.25rem' }}>{s.sub}</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: '1.25rem', textAlign: 'right' }}>
-            <Link href="/empleo/estadisticas" style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>Ver todos los indicadores →</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* BOE */}
-      <section className="section">
-        <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1.25rem' }}>
-            <h2 style={{ fontFamily: 'var(--display-font)', fontSize: '1.4rem' }}>Últimas disposiciones — BOE</h2>
-            <Link href="/boe" style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>Ir al BOE →</Link>
-          </div>
-          <div style={{ background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(16px)', border: '1px solid rgba(151, 180, 224, 0.2)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: '0 4px 15px rgba(151, 180, 224, 0.03)' }}>
-            <table className="boe-table">
-              <thead>
-                <tr><th>Referencia</th><th>Título</th><th>Sección</th><th>Fecha</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><Link href="/boe/rdp-2026-421" style={{ color: 'var(--primary)', fontWeight: 600 }}>RDP-2026-421</Link></td>
-                  <td>Real Decreto de regulación del comercio ambulante</td>
-                  <td>I — Disposiciones generales</td><td>10 jun. 2026</td>
-                </tr>
-                <tr>
-                  <td><Link href="/boe/rdp-2026-418" style={{ color: 'var(--primary)', fontWeight: 600 }}>RDP-2026-418</Link></td>
-                  <td>Orden ministerial sobre clasificación arancelaria</td>
-                  <td>II — Autoridades y personal</td><td>7 jun. 2026</td>
-                </tr>
-                <tr>
-                  <td><Link href="/boe/rdp-2026-410" style={{ color: 'var(--primary)', fontWeight: 600 }}>RDP-2026-410</Link></td>
-                  <td>Resolución de convocatoria de becas de empleo</td>
-                  <td>III — Otras disposiciones</td><td>2 jun. 2026</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      {/* AVISO */}
-      <section style={{ paddingBottom: '3.5rem' }}>
-        <div className="container">
-          <div className="alert alert-info">
-            <span style={{ fontSize: '1.1rem' }}>ℹ️</span>
-            <span>
-              El <strong>LPB (Laboral Panien Bank)</strong> está en fase de despliegue. Algunas funcionalidades se habilitarán progresivamente durante las próximas semanas.
-              Para consultas urgentes, utilice los canales habilitados en{' '}
-              <Link href="/lpb" style={{ color: 'var(--primary)', fontWeight: 600 }}>lpb.mece.rdp.gov</Link>.
-            </span>
           </div>
         </div>
       </section>

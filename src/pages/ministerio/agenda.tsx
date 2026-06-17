@@ -10,10 +10,30 @@ const SIDE = [
 ];
 
 const EVENTOS = [
-  { fecha: '18 jun. 2026', titulo: 'Reunión del Consejo Económico y Social', lugar: 'Palacio Ministerial, Sala de Juntas A', hora: '10:00 h' },
-  { fecha: '20 jun. 2026', titulo: 'Firma del Acuerdo Marco de Cooperación Comercial con la Alianza del Norte', lugar: 'Sede del Ministerio', hora: '12:00 h' },
-  { fecha: '25 jun. 2026', titulo: 'Jornadas sobre Economía Digital y Empleo', lugar: 'Auditorio Nacional del Pan', hora: '09:30 h' },
-  { fecha: '2 jul. 2026', titulo: 'Presentación del Informe de Coyuntura Económica — 2.º Trimestre 2026', lugar: 'Sala de Prensa Ministerial', hora: '11:00 h' },
+  {
+    fecha: '17 jun. 2026',
+    titulo: 'Publicación del Real Decreto-Ley 14/2026 de derogación de la Tasa IRPF/26',
+    lugar: 'BOE del Reino del Pan',
+    hora: '00:00 h',
+  },
+  {
+    fecha: '16 jun. 2026',
+    titulo: 'Aprobación de la Orden ECE/118/2026 de creación de los "Créditos ICORP"',
+    lugar: 'Sede del Ministerio',
+    hora: '12:00 h',
+  },
+  {
+    fecha: '15 jun. 2026',
+    titulo: 'Lanzamiento oficial del Bono Masa Joven (BMJ) y apertura del plazo de solicitudes en el LPB',
+    lugar: 'Palacio Ministerial, Sala de Prensa',
+    hora: '10:30 h',
+  },
+  {
+    fecha: '12 jun. 2026',
+    titulo: 'Presentación del Informe de Coyuntura Económica — 2.º Trimestre 2026',
+    lugar: 'Auditorio Nacional del Pan',
+    hora: '11:00 h',
+  },
 ];
 
 export default function AgendaPage() {

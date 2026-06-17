@@ -5,12 +5,14 @@ import { useAuth } from '../../lib/auth';
 import { useLpbData } from '../../lib/lpb/hooks';
 import { DashboardUser, Economy, Prestamo } from '../../lib/lpb/types';
 
-type TabKey = 'cuenta' | 'prestamos' | 'transferencia';
+type TabKey = 'cuenta' | 'inventario' | 'prestamos' | 'transferencia' | 'tramites';
 
 const TABS: { key: TabKey; label: string; icon: string; path: string }[] = [
   { key: 'cuenta', label: 'Mi Cuenta', icon: '👤', path: '/lpb/cuenta' },
+  { key: 'inventario', label: 'Inventario', icon: '🎒', path: '/lpb/inventario' },
   { key: 'prestamos', label: 'Préstamos', icon: '📋', path: '/lpb/prestamos' },
   { key: 'transferencia', label: 'Transferencia', icon: '💸', path: '/lpb/transferencia' },
+  { key: 'tramites', label: 'Trámites', icon: '📑', path: '/lpb/tramites' },
 ];
 
 interface Props {

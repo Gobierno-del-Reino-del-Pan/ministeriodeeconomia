@@ -5,14 +5,20 @@ const SIDE = [
   { label: 'Política de Empleo', href: '/empleo' },
   { label: 'Estadísticas', href: '/empleo/estadisticas' },
   { label: 'Políticas Activas', href: '/empleo/politicas' },
-  { label: 'Ofertas de empleo', href: '/empleo/formacion/empleos' }, // <-- NUEVO
+  { label: 'Ofertas de empleo', href: '/empleo/formacion/empleos' },
 ];
 
 const PLANES = [
-  { titulo: 'Plan Nacional de Empleo Juvenil 2026', desc: 'Incentivos a la contratación indefinida de menores de 30 años: bonificaciones en cuotas a la Seguridad Social y desgravaciones fiscales.', estado: 'Activo' },
-  { titulo: 'Programa de Reinserción Laboral', desc: 'Apoyo a desempleados de larga duración mediante itinerarios personalizados de orientación, formación y prácticas en empresa.', estado: 'Activo' },
-  { titulo: 'Plan de Empleo para Personas con Discapacidad', desc: 'Medidas específicas para favorecer la contratación y la adaptación de puestos de trabajo para personas con discapacidad reconocida.', estado: 'Activo' },
-  { titulo: 'Incentivos a la Conciliación Familiar', desc: 'Ayudas a empresas que implanten medidas de conciliación, teletrabajo o reducción de jornada por cuidado de dependientes.', estado: 'Convocatoria próxima' },
+  {
+    titulo: 'Créditos ICORP (Orden ECE/118/2026)',
+    desc: 'Línea de financiación empresarial para empresas de nueva creación. Finalidad: impulsar el emprendimiento y la innovación, favorecer la creación de empleo, facilitar la implantación de nuevas actividades económicas e incrementar la competitividad del tejido empresarial paniense. El ICORP desarrollará las bases reguladoras en un plazo máximo de quince días.',
+    estado: 'Activo',
+  },
+  {
+    titulo: 'Bono Masa Joven (BMJ)',
+    desc: 'Ayuda de 15.200 panedas para ciudadanos jóvenes del Reino del Pan (18 años o más) destinada a fomentar su participación en la vida cultural, social y económica del Reino. Requisitos: DPI activo, tener 18 años o más y no haber solicitado el bono anteriormente.',
+    estado: 'Activo',
+  },
 ];
 
 export default function Politicas() {
@@ -29,10 +35,14 @@ export default function Politicas() {
             {PLANES.map((p, i) => (
               <div key={i} className="card card-featured">
                 <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.6rem' }}>
-                  <span className={'tag ' + (p.estado === 'Activo' ? 'tag-primary' : 'tag-gold')}>{p.estado}</span>
+                  <span className="tag tag-primary">{p.estado}</span>
                 </div>
-                <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '1.05rem', marginBottom: '0.5rem' }}>{p.titulo}</h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', margin: 0, lineHeight: 1.7 }}>{p.desc}</p>
+                <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '1.05rem', marginBottom: '0.5rem' }}>
+                  {p.titulo}
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', margin: 0, lineHeight: 1.7 }}>
+                  {p.desc}
+                </p>
               </div>
             ))}
           </div>

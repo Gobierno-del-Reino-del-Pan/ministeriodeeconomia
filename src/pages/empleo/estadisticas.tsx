@@ -5,7 +5,7 @@ const SIDE = [
   { label: 'Política de Empleo', href: '/empleo' },
   { label: 'Estadísticas', href: '/empleo/estadisticas' },
   { label: 'Políticas Activas', href: '/empleo/politicas' },
-  { label: 'Ofertas de empleo', href: '/empleo/formacion/empleos' }, // <-- NUEVO
+  { label: 'Ofertas de empleo', href: '/empleo/formacion/empleos' },
 ];
 
 const DATOS = [

@@ -6,6 +6,7 @@ const SIDE = [
   { label: 'Exportaciones', href: '/comercio/exportaciones' },
   { label: 'Inversiones Extranjeras', href: '/comercio/inversiones' },
   { label: 'Acuerdos Comerciales', href: '/comercio/acuerdos' },
+  { label: 'PIB', href: '/comercio/indicadores' },
 ];
 
 export default function Inversiones() {
@@ -20,21 +21,9 @@ export default function Inversiones() {
         <div className="container subpage-grid">
           <SideNav title="Comercio" items={SIDE} />
           <div>
-            <p style={{ color: 'var(--muted-foreground)', lineHeight: 1.75, marginBottom: '1.5rem' }}>
-              El Reglamento de Inversiones Extranjeras, aprobado por Real Decreto en junio de 2026, establece el régimen de autorización previa para las inversiones en sectores estratégicos y el procedimiento de notificación para las restantes.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginTop: '1.5rem' }}>
-              {[
-                { label: 'Inversión acumulada', valor: '2.300.000 €', sub: 'Comprometida en 2026' },
-                { label: 'Proyectos activos', valor: '14', sub: 'En distintos sectores' },
-                { label: 'Países inversores', valor: '9', sub: 'Con relación activa' },
-              ].map((s, i) => (
-                <div key={i} className="stat-card">
-                  <div className="stat-number">{s.valor}</div>
-                  <div className="stat-label">{s.label}</div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--muted-foreground)', marginTop: '0.2rem' }}>{s.sub}</div>
-                </div>
-              ))}
+            <div className="alert alert-warning" style={{ marginBottom: '1.5rem' }}>
+              <span>📢</span>
+              <span>El marco regulatorio para inversiones extranjeras se encuentra en proceso de actualización. Próximamente se publicará el nuevo reglamento.</span>
             </div>
           </div>
         </div>

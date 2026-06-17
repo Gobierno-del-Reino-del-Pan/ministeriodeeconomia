@@ -6,6 +6,7 @@ const SIDE = [
   { label: 'Exportaciones', href: '/comercio/exportaciones' },
   { label: 'Inversiones Extranjeras', href: '/comercio/inversiones' },
   { label: 'Acuerdos Comerciales', href: '/comercio/acuerdos' },
+  { label: 'PIB', href: '/comercio/indicadores' },
 ];
 
 export default function Exportaciones() {
@@ -20,21 +21,10 @@ export default function Exportaciones() {
         <div className="container subpage-grid">
           <SideNav title="Comercio" items={SIDE} />
           <div>
-            <h2 style={{ fontFamily: 'var(--display-font)', fontSize: '1.4rem', marginBottom: '1rem' }}>Programa de Apoyo a la Exportación 2026</h2>
-            <p style={{ color: 'var(--muted-foreground)', lineHeight: 1.75, marginBottom: '1.5rem' }}>
-              El Ministerio pone a disposición de las empresas panienses una línea de financiación preferencial de <strong>12 millones de PAN</strong> para el ejercicio 2026, destinada a sufragar los costes de apertura de nuevos mercados exteriores, participación en ferias internacionales y contratación de personal especializado en comercio exterior.
-            </p>
             <div className="alert alert-warning" style={{ marginBottom: '1.5rem' }}>
-              <span>⚠️</span>
-              <span>El plazo de solicitud está abierto hasta el <strong>31 de agosto de 2026</strong>. Las solicitudes deben presentarse a través del LPB.</span>
+              <span>📢</span>
+              <span>La información sobre programas de apoyo a la exportación estará disponible próximamente. Consulte el <strong>LPB</strong> para futuras actualizaciones.</span>
             </div>
-            <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '1.1rem', marginBottom: '0.75rem' }}>Beneficiarios</h3>
-            <ul style={{ margin: '0 0 1.5rem', padding: '0 0 0 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <li style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>Empresas con domicilio fiscal en el Reino del Pan</li>
-              <li style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>Con menos de 250 trabajadores (PYME)</li>
-              <li style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>Sin exportaciones previas o con exportaciones inferiores al 10% de su facturación</li>
-            </ul>
-            <a href="/lpb/tramites" className="btn btn-primary">Solicitar en LPB</a>
           </div>
         </div>
       </div>

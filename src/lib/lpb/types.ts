@@ -1,3 +1,19 @@
+export interface InventoryItem {
+  id: string;
+  name: string;
+  type: string;
+  emoji: string;
+  price: number;
+  effect: string;
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  quantity: number;
+  available: boolean;
+  stackable: boolean;
+  description: string;
+  inventory_id: string;
+  purchased_at: string;
+}
+
 export interface Economy {
   id: string;
   username: string;
@@ -5,7 +21,7 @@ export interface Economy {
   bank: number;
   total_earned: number;
   total_spent: number;
-  inventory: Record<string, number> | null;
+  inventory: InventoryItem[] | null;
   active_boosts: Record<string, unknown> | null;
   last_work: number | null;
   last_rob: number | null;
