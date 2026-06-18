@@ -1,5 +1,60 @@
 import { Economy, DashboardUser, InventoryItem } from '../../../lib/lpb/types';
 
+interface RawInventoryItem {
+  inventory_id: string;
+  id?: string;
+  name?: string;
+  type?: string;
+  emoji?: string;
+  price?: number;
+  price_paid?: number;
+  rarity?: string;
+  quantity?: number;
+  available?: boolean;
+  stackable?: boolean;
+  description?: string;
+  purchased_at?: string | null;
+  empresa_id?: string;
+  empresa_name?: string;
+  [key: string]: any;
+}
+
+function normalizeItem(raw: RawInventoryItem): InventoryItem {
+  const price = raw.price_paid ?? raw.price ?? 0;
+  const rarity = raw.rarity || 'common';
+  let description = raw.description;
+  if (!description && raw.empresa_name) {
+    description = `Producto de ${raw.empresa_name}`;
+  } else if (!description) {
+    description = 'Sin descripción';
+  }
+  const emoji = raw.emoji || '📦';
+  const name = raw.name || raw.empresa_name || 'Objeto';
+  const type = raw.type || 'unknown';
+  const quantity = raw.quantity ?? 1;
+  const available = raw.available !== undefined ? raw.available : true;
+  const stackable = raw.stackable !== undefined ? raw.stackable : true;
+  const purchased_at = raw.purchased_at || null;
+
+  return {
+    inventory_id: raw.inventory_id,
+    id: raw.id || '',
+    name,
+    type,
+    emoji,
+    price,
+    rarity,
+    quantity,
+    available,
+    stackable,
+    description,
+    purchased_at,
+    ...(raw.empresa_id && { empresa_id: raw.empresa_id }),
+    ...(raw.empresa_name && { empresa_name: raw.empresa_name }),
+    ...(raw.price_paid !== undefined && { price_paid: raw.price_paid }),
+  } as InventoryItem;
+}
+
 const RARITY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   common: { bg: '#f5f5f5', text: '#666', border: '#ddd' },
   uncommon: { bg: '#e6f7e6', text: '#1a7f1a', border: '#4caf50' },
@@ -22,12 +77,19 @@ const TYPE_LABELS: Record<string, string> = {
   boost: 'Mejora',
   cosmetic: 'Cosmético',
   special: 'Especial',
+  entidad_item: 'Producto de empresa',
 };
 
-function InventoryCard({ item }: { item: InventoryItem }) {
-  const rarity = RARITY_COLORS[item.rarity] || RARITY_COLORS.common;
-  const formattedDate = item.purchased_at
-    ? new Date(item.purchased_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+function InventoryCard({ item }: { item: RawInventoryItem }) {
+  const normalized = normalizeItem(item);
+  const rarity = RARITY_COLORS[normalized.rarity] || RARITY_COLORS.common;
+
+  const formattedDate = normalized.purchased_at
+    ? new Date(normalized.purchased_at).toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
     : '—';
 
   return (
@@ -42,67 +104,84 @@ function InventoryCard({ item }: { item: InventoryItem }) {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-        <div style={{
-          fontSize: '2.5rem',
-          filter: item.available ? 'none' : 'grayscale(1) opacity(0.5)',
-        }}>
-          {item.emoji}
+        <div
+          style={{
+            fontSize: '2.5rem',
+            filter: normalized.available ? 'none' : 'grayscale(1) opacity(0.5)',
+          }}
+        >
+          {normalized.emoji}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.2rem', color: rarity.text }}>
-            {item.name}
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: '0.95rem',
+              marginBottom: '0.2rem',
+              color: rarity.text,
+            }}
+          >
+            {normalized.name}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', marginBottom: '0.5rem' }}>
-            {item.description}
+            {normalized.description}
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span style={{
-              fontSize: '0.7rem',
-              padding: '0.15rem 0.5rem',
-              borderRadius: '999px',
-              background: rarity.border,
-              color: 'white',
-              fontWeight: 600,
-            }}>
-              {RARITY_LABELS[item.rarity]}
+            <span
+              style={{
+                fontSize: '0.7rem',
+                padding: '0.15rem 0.5rem',
+                borderRadius: '999px',
+                background: rarity.border,
+                color: 'white',
+                fontWeight: 600,
+              }}
+            >
+              {RARITY_LABELS[normalized.rarity]}
             </span>
-            <span style={{
-              fontSize: '0.7rem',
-              padding: '0.15rem 0.5rem',
-              borderRadius: '999px',
-              background: 'var(--muted)',
-              color: 'var(--foreground)',
-            }}>
-              {TYPE_LABELS[item.type] || item.type}
+            <span
+              style={{
+                fontSize: '0.7rem',
+                padding: '0.15rem 0.5rem',
+                borderRadius: '999px',
+                background: 'var(--muted)',
+                color: 'var(--foreground)',
+              }}
+            >
+              {TYPE_LABELS[normalized.type] || normalized.type}
             </span>
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{
-            fontSize: '1.1rem',
-            fontWeight: 700,
-            color: 'var(--gold)',
-          }}>
-            {item.price.toLocaleString('es-ES')} 🪙
+          <div
+            style={{
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              color: 'var(--gold)',
+            }}
+          >
+            {normalized.price.toLocaleString('es-ES')} 🪙
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
-            ×{item.quantity}
+            ×{normalized.quantity}
           </div>
         </div>
       </div>
-      <div style={{
-        marginTop: '0.75rem',
-        paddingTop: '0.75rem',
-        borderTop: '1px solid var(--border)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        fontSize: '0.75rem',
-        color: 'var(--muted-foreground)',
-      }}>
+      <div
+        style={{
+          marginTop: '0.75rem',
+          paddingTop: '0.75rem',
+          borderTop: '1px solid var(--border)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '0.75rem',
+          color: 'var(--muted-foreground)',
+        }}
+      >
         <span>Comprado: {formattedDate}</span>
-        <span style={{ fontWeight: 600, color: item.available ? 'var(--success)' : 'var(--muted-foreground)' }}>
-          {item.available ? 'Disponible' : 'No disponible'}
+        <span style={{ fontWeight: 600, color: normalized.available ? 'var(--success)' : 'var(--muted-foreground)' }}>
+          {normalized.available ? 'Disponible' : 'No disponible'}
         </span>
       </div>
     </div>
@@ -110,22 +189,27 @@ function InventoryCard({ item }: { item: InventoryItem }) {
 }
 
 export default function TabInventario({ economy, user }: { economy: Economy | null; user: DashboardUser }) {
-  const inventory: InventoryItem[] = economy?.inventory || [];
-  const totalItems = inventory.reduce((sum, item) => sum + item.quantity, 0);
-  const totalValue = inventory.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const inventory: RawInventoryItem[] = economy?.inventory || [];
+  const totalItems = inventory.reduce((sum, item) => sum + (item.quantity ?? 1), 0);
+  const totalValue = inventory.reduce((sum, item) => {
+    const price = item.price_paid ?? item.price ?? 0;
+    return sum + price * (item.quantity ?? 1);
+  }, 0);
 
   const groupedByType = inventory.reduce((acc, item) => {
-    const type = item.type;
+    const type = item.type || 'unknown';
     if (!acc[type]) acc[type] = [];
     acc[type].push(item);
     return acc;
-  }, {} as Record<string, InventoryItem[]>);
+  }, {} as Record<string, RawInventoryItem[]>);
 
   if (!economy) {
     return (
       <div className="alert alert-info">
         <span>ℹ️</span>
-        <span>No se encontraron datos económicos para tu cuenta. Interactúa en el servidor de Discord para generar tu perfil.</span>
+        <span>
+          No se encontraron datos económicos para tu cuenta. Interactúa en el servidor de Discord para generar tu perfil.
+        </span>
       </div>
     );
   }
@@ -146,13 +230,14 @@ export default function TabInventario({ economy, user }: { economy: Economy | nu
 
   return (
     <div>
-      {/* Resumen */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-        gap: '1rem',
-        marginBottom: '1.5rem',
-      }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+          gap: '1rem',
+          marginBottom: '1.5rem',
+        }}
+      >
         <div className="card" style={{ padding: '1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.75rem', marginBottom: '0.25rem' }}>🎒</div>
           <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{inventory.length}</div>
@@ -170,34 +255,39 @@ export default function TabInventario({ economy, user }: { economy: Economy | nu
         </div>
       </div>
 
-      {/* Inventario agrupado por tipo */}
       {Object.entries(groupedByType).map(([type, items]) => (
         <div key={type} style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{
-            fontFamily: 'var(--display-font)',
-            fontSize: '1rem',
-            marginBottom: '0.75rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}>
-            <span style={{
-              padding: '0.25rem 0.75rem',
-              background: 'var(--muted)',
-              borderRadius: 'var(--radius)',
-              fontSize: '0.85rem',
-            }}>
+          <h3
+            style={{
+              fontFamily: 'var(--display-font)',
+              fontSize: '1rem',
+              marginBottom: '0.75rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+            }}
+          >
+            <span
+              style={{
+                padding: '0.25rem 0.75rem',
+                background: 'var(--muted)',
+                borderRadius: 'var(--radius)',
+                fontSize: '0.85rem',
+              }}
+            >
               {TYPE_LABELS[type] || type}
             </span>
             <span style={{ color: 'var(--muted-foreground)', fontWeight: 400, fontSize: '0.85rem' }}>
               ({items.length})
             </span>
           </h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '1rem',
-          }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '1rem',
+            }}
+          >
             {items.map((item) => (
               <InventoryCard key={item.inventory_id} item={item} />
             ))}

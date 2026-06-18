@@ -15,7 +15,7 @@ import Indicadores from './pages/comercio/indicadores';
 import EmpleoIndex from './pages/empleo/index';
 import Estadisticas from './pages/empleo/estadisticas';
 import Politicas from './pages/empleo/politicas';
-import Empleos from './pages/empleo/formacion/empleos';
+
 
 // LPB
 import LpbIndex from './pages/lpb/index';
@@ -57,7 +57,7 @@ export default function App() {
       <Route path="/empleo" component={EmpleoIndex} />
       <Route path="/empleo/estadisticas" component={Estadisticas} />
       <Route path="/empleo/politicas" component={Politicas} />
-      <Route path="/empleo/formacion/empleos" component={Empleos} />
+
       {/* LPB */}
       <Route path="/lpb" component={LpbIndex} />
       <Route path="/lpb/cuenta" component={LpbCuenta} />

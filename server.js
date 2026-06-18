@@ -319,9 +319,20 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Ya has reclamado este bono.' });
     }
 
-    // 5) Registrar el bono y actualizar economía
+    // 5) Verificar que el gobierno tiene fondos
     const BONO_AMOUNT = 15200;
 
+    const { data: gobierno } = await sb
+      .from('gobierno')
+      .select('balance, total_withdrawn')
+      .eq('id', 'gobierno')
+      .maybeSingle();
+
+    if (!gobierno || (gobierno.balance ?? 0) < BONO_AMOUNT) {
+      return res.json({ ok: false, error: 'El Bono Masa Jóven no está disponible en este momento. Inténtalo más tarde.' });
+    }
+
+    // 6) Registrar el bono, actualizar economía del usuario y descontar del gobierno
     const { error: bonoErr } = await sb
       .from('bonos')
       .insert({ user_id: user.discord_id, dpi: user.dpi, bono_type: 'masa_joven', amount: BONO_AMOUNT });
@@ -354,6 +365,20 @@ async function bootstrap() {
     if (econErr) {
       console.error('economy update error:', econErr);
       return res.json({ ok: false, error: 'Error al actualizar tu saldo.' });
+    }
+
+    // Descontar del gobierno
+    const { error: gobErr } = await sb
+      .from('gobierno')
+      .update({
+        balance: (gobierno.balance ?? 0) - BONO_AMOUNT,
+        total_withdrawn: (gobierno.total_withdrawn ?? 0) + BONO_AMOUNT,
+      })
+      .eq('id', 'gobierno');
+
+    if (gobErr) {
+      console.error('gobierno update error:', gobErr);
+      // El bono ya se dio, no lo revertimos por simplicidad
     }
 
     res.json({ ok: true, amount: BONO_AMOUNT });
@@ -591,6 +616,7 @@ async function bootstrap() {
         emoji: emoji || '📦',
         category: category || 'general',
         stackable: stackable !== false,
+        stock: 0,
       })
       .select()
       .single();
@@ -604,6 +630,83 @@ async function bootstrap() {
     }
 
     res.json({ ok: true, producto: data });
+  });
+
+  // Reponer stock de un producto
+  app.post('/api/lpb/empresas/:empresaId/productos/:productoId/reponer', async (req, res) => {
+    const user = getSession(req);
+    if (!user) return res.status(401).json({ error: 'No autenticado' });
+
+    const sb = getSupabase();
+    if (!sb) return res.status(500).json({ error: 'Sin Supabase' });
+
+    const { empresaId, productoId } = req.params;
+    const { cantidad } = req.body;
+
+    if (!cantidad || cantidad < 1) {
+      return res.json({ ok: false, error: 'Debes indicar una cantidad válida (mínimo 1).' });
+    }
+
+    // Verificar propiedad de la empresa
+    const { data: emp } = await sb
+      .from('empresas')
+      .select('owner_id, balance')
+      .eq('id', empresaId)
+      .maybeSingle();
+
+    if (!emp || emp.owner_id !== user.discord_id) {
+      return res.status(403).json({ error: 'No eres el propietario de esta empresa.' });
+    }
+
+    // Leer producto
+    const { data: producto } = await sb
+      .from('entidad_shop')
+      .select('stock, price, name')
+      .eq('id', productoId)
+      .eq('empresa_id', empresaId)
+      .maybeSingle();
+
+    if (!producto) {
+      return res.json({ ok: false, error: 'Producto no encontrado.' });
+    }
+
+    const costoPorUnidad = Math.max(1, Math.round(producto.price / 3));
+    const costoTotal = costoPorUnidad * cantidad;
+
+    if ((emp.balance ?? 0) < costoTotal) {
+      return res.json({ ok: false, error: `Tu empresa no tiene suficiente saldo. Necesitas ${costoTotal.toLocaleString('es-ES')} panedas para reponer ${cantidad} unidad(es).` });
+    }
+
+    // Actualizar stock
+    const { error: stockErr } = await sb
+      .from('entidad_shop')
+      .update({ stock: (producto.stock ?? 0) + cantidad })
+      .eq('id', productoId)
+      .eq('empresa_id', empresaId);
+
+    if (stockErr) {
+      console.error('reponer stock error:', stockErr);
+      return res.json({ ok: false, error: 'Error al actualizar el stock.' });
+    }
+
+    // Descontar de la empresa
+    const { error: balErr } = await sb
+      .from('empresas')
+      .update({ balance: (emp.balance ?? 0) - costoTotal })
+      .eq('id', empresaId);
+
+    if (balErr) {
+      console.error('reponer balance error:', balErr);
+      // Revertir stock
+      await sb
+        .from('entidad_shop')
+        .update({ stock: producto.stock ?? 0 })
+        .eq('id', productoId)
+        .eq('empresa_id', empresaId);
+      return res.json({ ok: false, error: 'Error al descontar el saldo de la empresa.' });
+    }
+
+    res.json({ ok: true, productoId, cantidad, costoTotal, costoPorUnidad, nuevoStock: (producto.stock ?? 0) + cantidad });
   });
 
   // Editar producto

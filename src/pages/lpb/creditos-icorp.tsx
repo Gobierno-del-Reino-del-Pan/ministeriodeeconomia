@@ -53,7 +53,7 @@ export default function LpbCreditosICORP() {
               <div>
                 <strong>Orden ECE/118/2026, de 16 de junio</strong><br />
                 Línea de financiación empresarial inspirada en las <strong>líneas ICO</strong> del Gobierno de España.
-                Esta ayuda se enmarca en el programa <strong>BORP</strong> (Bono de Offensive Rural Paniense) y está
+                Esta orden se publica en el <strong>BORP</strong> (Boletín Oficial del Reino del Pan) y está
                 gestionada por el Instituto Corporativo de Financiación (ICORP).
               </div>
             </div>

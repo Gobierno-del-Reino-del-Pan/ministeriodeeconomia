@@ -40,6 +40,7 @@ interface Producto {
   emoji: string;
   category: string;
   stackable: boolean;
+  stock: number;
   created_at: string;
 }
 
@@ -156,6 +157,21 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
   const [prodError, setProdError] = useState('');
   const [prodLoading, setProdLoading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
+
+  // Reponer modal
+  const [reponerModal, setReponerModal] = useState<{
+    isOpen: boolean;
+    producto: Producto | null;
+    cantidad: number;
+    loading: boolean;
+    error: string;
+  }>({
+    isOpen: false,
+    producto: null,
+    cantidad: 1,
+    loading: false,
+    error: '',
+  });
 
   // Modal confirmación
   const [confirmModal, setConfirmModal] = useState<{
@@ -291,8 +307,6 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
     // Generar ID automático si es nuevo producto
     let productId = editingProduct ? editingProduct.product_id : generateProductId();
 
-    // Si es edición, no regeneramos el ID
-
     const payload = {
       product_id: productId,
       name: rawName,
@@ -322,12 +336,9 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
         setView('detail');
         loadProductos(selectedEmpresa.id);
       } else {
-        // Si el error es por ID duplicado, regenerar y reintentar (opcional)
         if (data.error && data.error.includes('duplicado')) {
-          // Regeneramos el ID y lo mostramos al usuario para que reintente
           const newId = generateProductId();
           setProdError(`El ID generado ya existe, reintenta con el nuevo ID: ${newId}`);
-          // Podríamos actualizar el payload, pero mejor dejamos que el usuario pulse de nuevo
         } else {
           setProdError(data.error || 'Error al guardar el producto');
         }
@@ -361,6 +372,46 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
     });
   };
 
+  const handleReponer = (prod: Producto) => {
+    setReponerModal({
+      isOpen: true,
+      producto: prod,
+      cantidad: 1,
+      loading: false,
+      error: '',
+    });
+  };
+
+  const confirmReponer = async () => {
+    if (!selectedEmpresa || !reponerModal.producto) return;
+    setReponerModal({ ...reponerModal, loading: true, error: '' });
+    try {
+      const res = await fetch(
+        `/api/lpb/empresas/${selectedEmpresa.id}/productos/${reponerModal.producto.id}/reponer`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cantidad: reponerModal.cantidad }),
+        }
+      );
+      const data = await res.json();
+      if (data.ok) {
+        setReponerModal({ ...reponerModal, isOpen: false, loading: false });
+        loadProductos(selectedEmpresa.id);
+        // Actualizar balance de empresa en UI
+        setSelectedEmpresa({
+          ...selectedEmpresa,
+          balance: selectedEmpresa.balance - data.costoTotal,
+        });
+      } else {
+        setReponerModal({ ...reponerModal, loading: false, error: data.error || 'Error al reponer' });
+      }
+    } catch {
+      setReponerModal({ ...reponerModal, loading: false, error: 'Error de conexión' });
+    }
+  };
+
   const resetProductForm = () => {
     setProdName('');
     setProdDesc('');
@@ -386,7 +437,6 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
 
   const startAddProduct = () => {
     resetProductForm();
-    // Generamos un ID inicial para mostrar (aunque no se muestra al usuario)
     setView('add-product');
   };
 
@@ -521,7 +571,6 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
 
   // ── VIEW: ADD / EDIT PRODUCT ──
   if ((view === 'add-product' || view === 'edit-product') && selectedEmpresa) {
-    // Para nuevo producto, generamos un ID que se mostrará (opcional) pero no editable
     const displayProductId = editingProduct ? editingProduct.product_id : 'AUTO-GENERADO';
 
     return (
@@ -537,7 +586,6 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
             {editingProduct ? 'Editar producto' : 'Nuevo producto'}
           </h3>
           <form onSubmit={handleProductSubmit}>
-            {/* Mostramos el ID (solo lectura) */}
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.85rem' }}>ID del producto</label>
               <div style={{
@@ -806,39 +854,146 @@ export default function TabEmpresa({ economy, user }: { economy: Economy | null;
           </div>
         ) : (
           <div style={{ display: 'grid', gap: '0.75rem' }}>
-            {productos.map(prod => (
-              <div key={prod.id} className="card lpb-product-item">
-                <div className="lpb-product-header">
-                  <span style={{ fontSize: '1.5rem' }}>{prod.emoji}</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{prod.name}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
-                      ID: {prod.product_id} · {prod.category} {prod.stackable ? '· Apilable' : ''}
+            {productos.map(prod => {
+              const costoReponer = Math.max(1, Math.round(prod.price / 3));
+              const hayStock = (prod.stock ?? 0) > 0;
+              return (
+                <div key={prod.id} className="card lpb-product-item">
+                  <div className="lpb-product-header">
+                    <span style={{ fontSize: '1.5rem' }}>{prod.emoji}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{prod.name}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
+                        ID: {prod.product_id} · {prod.category} {prod.stackable ? '· Apilable' : ''}
+                      </div>
+                      {prod.description && (
+                        <div style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', marginTop: '0.15rem' }}>{prod.description}</div>
+                      )}
+                      <div style={{ fontSize: '0.8rem', marginTop: '0.15rem', color: hayStock ? 'var(--success)' : 'var(--muted-foreground)' }}>
+                        Stock: {prod.stock ?? 0} {hayStock ? 'en almacén' : '(sin stock)'}
+                      </div>
                     </div>
-                    {prod.description && (
-                      <div style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', marginTop: '0.15rem' }}>{prod.description}</div>
-                    )}
+                  </div>
+                  <div className="lpb-product-footer">
+                    <div style={{ fontWeight: 600, color: 'var(--gold)', whiteSpace: 'nowrap' }}>{fmt(prod.price)} 🪙</div>
+                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                      <button
+                        onClick={() => handleReponer(prod)}
+                        style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', border: '1px solid var(--success)', borderRadius: 'var(--radius)', background: 'var(--background)', color: 'var(--success)', cursor: 'pointer' }}
+                        title={`Reponer por ${costoReponer} panedas/unidad`}
+                      >
+                        📦 Reponer
+                      </button>
+                      <button
+                        onClick={() => startEditProduct(prod)}
+                        style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--background)', cursor: 'pointer' }}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(prod)}
+                        style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', border: '1px solid var(--error)', borderRadius: 'var(--radius)', background: 'var(--background)', color: 'var(--error)', cursor: 'pointer' }}
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="lpb-product-footer">
-                  <div style={{ fontWeight: 600, color: 'var(--gold)', whiteSpace: 'nowrap' }}>{fmt(prod.price)} 🪙</div>
-                  <div style={{ display: 'flex', gap: '0.4rem' }}>
-                    <button
-                      onClick={() => startEditProduct(prod)}
-                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--background)', cursor: 'pointer' }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProduct(prod)}
-                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', border: '1px solid var(--error)', borderRadius: 'var(--radius)', background: 'var(--background)', color: 'var(--error)', cursor: 'pointer' }}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Modal Reponer */}
+        {reponerModal.isOpen && reponerModal.producto && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(4px)',
+              animation: 'fadeIn 0.2s ease',
+            }}
+            onClick={() => setReponerModal({ ...reponerModal, isOpen: false })}
+          >
+            <div
+              className="card"
+              style={{
+                maxWidth: '420px',
+                width: '90%',
+                padding: '2rem',
+                textAlign: 'center',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                animation: 'scaleIn 0.25s ease',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📦</div>
+              <h3 style={{ fontFamily: 'var(--display-font)', margin: '0 0 0.5rem' }}>
+                Reponer "{reponerModal.producto.name}"
+              </h3>
+              <p style={{ color: 'var(--muted-foreground)', marginBottom: '1rem' }}>
+                Costo: {Math.max(1, Math.round(reponerModal.producto.price / 3))} panedas por unidad
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <button
+                  onClick={() => setReponerModal({ ...reponerModal, cantidad: Math.max(1, reponerModal.cantidad - 1) })}
+                  style={{ padding: '0.3rem 0.7rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', background: 'var(--background)', cursor: 'pointer', fontSize: '1rem', lineHeight: 1 }}
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  value={reponerModal.cantidad}
+                  onChange={e => setReponerModal({ ...reponerModal, cantidad: Math.max(1, parseInt(e.target.value) || 1) })}
+                  min={1}
+                  style={{ width: '80px', padding: '0.4rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', fontSize: '0.9rem', textAlign: 'center', background: 'var(--background)', color: 'var(--foreground)' }}
+                />
+                <button
+                  onClick={() => setReponerModal({ ...reponerModal, cantidad: reponerModal.cantidad + 1 })}
+                  style={{ padding: '0.3rem 0.7rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', background: 'var(--background)', cursor: 'pointer', fontSize: '1rem', lineHeight: 1 }}
+                >
+                  +
+                </button>
               </div>
-            ))}
+              <p style={{ fontWeight: 600, color: 'var(--gold)', marginBottom: '1rem' }}>
+                Total: {fmt(Math.max(1, Math.round(reponerModal.producto.price / 3)) * reponerModal.cantidad)} 🪙
+              </p>
+              {reponerModal.error && (
+                <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
+                  <span>❌</span><span>{reponerModal.error}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+                <button
+                  onClick={() => setReponerModal({ ...reponerModal, isOpen: false })}
+                  style={{ padding: '0.5rem 1.5rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--background)', cursor: 'pointer', fontSize: '0.9rem' }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmReponer}
+                  disabled={reponerModal.loading}
+                  className="btn"
+                  style={{
+                    padding: '0.5rem 1.5rem',
+                    fontSize: '0.9rem',
+                    background: 'var(--success)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 'var(--radius)',
+                    cursor: 'pointer',
+                    opacity: reponerModal.loading ? 0.5 : 1,
+                  }}
+                >
+                  {reponerModal.loading ? 'Reponiendo...' : 'Reponer'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
