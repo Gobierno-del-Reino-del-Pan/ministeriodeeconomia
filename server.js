@@ -132,7 +132,6 @@ async function bootstrap() {
 
   // ── LPB API ───────────────────────────────────────────────────────────────
 
-  // Economía del usuario actual
   app.get('/api/lpb/economy', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -150,7 +149,6 @@ async function bootstrap() {
     res.json({ economy: data ?? null });
   });
 
-  // Préstamos del usuario actual (como borrower o lender)
   app.get('/api/lpb/prestamos', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -168,7 +166,8 @@ async function bootstrap() {
     res.json({ prestamos: data ?? [] });
   });
 
-  // Transferencia de efectivo por DPI
+  // ── Transferencia (con donación al gobierno) ──────────────────────────
+
   app.post('/api/lpb/transfer', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -181,7 +180,64 @@ async function bootstrap() {
     const sb = getSupabase();
     if (!sb) return res.status(500).json({ error: 'Sin Supabase' });
 
-    // Buscar destinatario por DPI
+    const GOV_DPI = '000000A';
+
+    // Caso especial: transferencia al gobierno
+    if (to_dpi === GOV_DPI) {
+      // Leer saldo del remitente
+      const { data: sender } = await sb
+        .from('users_economy')
+        .select('bank')
+        .eq('id', user.discord_id)
+        .maybeSingle();
+
+      if (!sender || sender.bank < amount) {
+        return res.json({ ok: false, error: 'Saldo bancario insuficiente.' });
+      }
+
+      // Leer saldo del gobierno (incluido total_earned)
+      const { data: gobierno, error: govErr } = await sb
+        .from('gobierno')
+        .select('balance, total_earned')
+        .eq('id', 'gobierno')
+        .maybeSingle();
+
+      if (govErr || !gobierno) {
+        console.error('gobierno fetch error:', govErr);
+        return res.json({ ok: false, error: 'Error al obtener datos del gobierno.' });
+      }
+
+      // Actualizar remitente
+      const { error: errSender } = await sb
+        .from('users_economy')
+        .update({ bank: sender.bank - amount, updated_at: new Date().toISOString() })
+        .eq('id', user.discord_id);
+
+      if (errSender) {
+        console.error('transfer sender error:', errSender);
+        return res.json({ ok: false, error: 'Error al procesar la transferencia.' });
+      }
+
+      // Actualizar gobierno: sumar al balance y a total_earned
+      const { error: errGov } = await sb
+        .from('gobierno')
+        .update({
+          balance: (gobierno.balance ?? 0) + amount,
+          total_earned: (gobierno.total_earned ?? 0) + amount
+        })
+        .eq('id', 'gobierno');
+
+      if (errGov) {
+        console.error('transfer gobierno error:', errGov);
+        // Revertir remitente
+        await sb.from('users_economy').update({ bank: sender.bank, updated_at: new Date().toISOString() }).eq('id', user.discord_id);
+        return res.json({ ok: false, error: 'Error al acreditar al gobierno.' });
+      }
+
+      return res.json({ ok: true });
+    }
+
+    // --- Transferencia a usuario normal ---
     const { data: destVerif, error: dpiErr } = await sb
       .from('verificados')
       .select('discord_id')
@@ -196,7 +252,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'No puedes transferirte dinero a ti mismo.' });
     }
 
-    // Leer saldo del remitente
     const { data: sender } = await sb
       .from('users_economy')
       .select('bank')
@@ -207,7 +262,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Saldo bancario insuficiente.' });
     }
 
-    // Leer saldo del destinatario
     const { data: receiver } = await sb
       .from('users_economy')
       .select('bank, total_earned')
@@ -218,7 +272,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'El destinatario no tiene cuenta en el banco.' });
     }
 
-    // Actualizar remitente
     const { error: errSender } = await sb
       .from('users_economy')
       .update({ bank: sender.bank - amount, updated_at: new Date().toISOString() })
@@ -229,7 +282,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Error al procesar la transferencia.' });
     }
 
-    // Actualizar destinatario
     const { error: errReceiver } = await sb
       .from('users_economy')
       .update({
@@ -241,7 +293,6 @@ async function bootstrap() {
 
     if (errReceiver) {
       console.error('transfer receiver error:', errReceiver);
-      // Revertir remitente
       await sb.from('users_economy').update({ bank: sender.bank, updated_at: new Date().toISOString() }).eq('id', user.discord_id);
       return res.json({ ok: false, error: 'Error al acreditar al destinatario.' });
     }
@@ -278,12 +329,10 @@ async function bootstrap() {
     const sb = getSupabase();
     if (!sb) return res.status(500).json({ error: 'Sin Supabase' });
 
-    // 1) Comprobar que tiene DPI
     if (!user.dpi) {
       return res.json({ ok: false, error: 'No tienes DPI registrado.' });
     }
 
-    // 2) Buscar el DPI en la tabla dpis para comprobar edad
     const { data: dpiRecord, error: dpiErr } = await sb
       .from('dpis')
       .select('dpi_number, fecha_nac, nombre, apellidos')
@@ -294,7 +343,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'No se encontró tu DPI en el registro.' });
     }
 
-    // 3) Comprobar edad >= 18
     const birthDate = new Date(dpiRecord.fecha_nac);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -307,7 +355,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'No puedes reclamar el Bono Masa Jóven porque no cumples los requisitos necesarios. Debes tener 18 años o más.' });
     }
 
-    // 4) Comprobar que no lo ha reclamado ya
     const { data: existingBono } = await sb
       .from('bonos')
       .select('id')
@@ -319,7 +366,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Ya has reclamado este bono.' });
     }
 
-    // 5) Verificar que el gobierno tiene fondos
     const BONO_AMOUNT = 15200;
 
     const { data: gobierno } = await sb
@@ -332,7 +378,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'El Bono Masa Jóven no está disponible en este momento. Inténtalo más tarde.' });
     }
 
-    // 6) Registrar el bono, actualizar economía del usuario y descontar del gobierno
     const { error: bonoErr } = await sb
       .from('bonos')
       .insert({ user_id: user.discord_id, dpi: user.dpi, bono_type: 'masa_joven', amount: BONO_AMOUNT });
@@ -342,7 +387,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Error al registrar el bono.' });
     }
 
-    // Leer economía actual
     const { data: economy } = await sb
       .from('users_economy')
       .select('bank, total_earned')
@@ -367,7 +411,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Error al actualizar tu saldo.' });
     }
 
-    // Descontar del gobierno
     const { error: gobErr } = await sb
       .from('gobierno')
       .update({
@@ -378,7 +421,6 @@ async function bootstrap() {
 
     if (gobErr) {
       console.error('gobierno update error:', gobErr);
-      // El bono ya se dio, no lo revertimos por simplicidad
     }
 
     res.json({ ok: true, amount: BONO_AMOUNT });
@@ -388,7 +430,6 @@ async function bootstrap() {
 
   const EMPRESA_COST = 750000;
 
-  // Listar empresas del usuario
   app.get('/api/lpb/empresas', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -406,7 +447,6 @@ async function bootstrap() {
     res.json({ empresas: data ?? [] });
   });
 
-  // Crear empresa
   app.post('/api/lpb/empresas', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -419,7 +459,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'El nombre de la empresa debe tener al menos 2 caracteres.' });
     }
 
-    // Comprobar saldo
     const { data: economy } = await sb
       .from('users_economy')
       .select('bank, total_spent')
@@ -434,7 +473,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: `No tienes suficiente dinero en el banco. Crear una empresa cuesta ${EMPRESA_COST.toLocaleString('es-ES')} panedas. Tienes ${(economy.bank ?? 0).toLocaleString('es-ES')} panedas.` });
     }
 
-    // Crear empresa
     const { data: empresa, error: empErr } = await sb
       .from('empresas')
       .insert({
@@ -454,7 +492,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Error al crear la empresa.' });
     }
 
-    // Descontar del banco
     const { error: econErr } = await sb
       .from('users_economy')
       .update({
@@ -466,7 +503,6 @@ async function bootstrap() {
 
     if (econErr) {
       console.error('economy update error:', econErr);
-      // Intentar borrar la empresa recién creada
       await sb.from('empresas').delete().eq('id', empresa.id);
       return res.json({ ok: false, error: 'Error al descontar el pago. Inténtalo de nuevo.' });
     }
@@ -474,7 +510,6 @@ async function bootstrap() {
     res.json({ ok: true, empresa });
   });
 
-  // Editar empresa
   app.patch('/api/lpb/empresas/:id', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -485,7 +520,6 @@ async function bootstrap() {
     const { id } = req.params;
     const { name, description, emoji } = req.body;
 
-    // Verificar propiedad
     const { data: emp } = await sb
       .from('empresas')
       .select('owner_id')
@@ -516,7 +550,6 @@ async function bootstrap() {
     res.json({ ok: true, empresa: data });
   });
 
-  // Eliminar empresa
   app.delete('/api/lpb/empresas/:id', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -546,9 +579,8 @@ async function bootstrap() {
     res.json({ ok: true });
   });
 
-  // ── ENTIDAD SHOP (productos de empresa) ─────────────────────────────────────
+  // ── ENTIDAD SHOP ─────────────────────────────────────────────────────────────
 
-  // Listar productos de una empresa
   app.get('/api/lpb/empresas/:empresaId/productos', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -558,7 +590,6 @@ async function bootstrap() {
 
     const { empresaId } = req.params;
 
-    // Verificar propiedad
     const { data: emp } = await sb
       .from('empresas')
       .select('owner_id')
@@ -579,7 +610,6 @@ async function bootstrap() {
     res.json({ productos: data ?? [] });
   });
 
-  // Crear producto
   app.post('/api/lpb/empresas/:empresaId/productos', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -594,7 +624,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Datos incompletos: product_id, name y price son obligatorios.' });
     }
 
-    // Verificar propiedad
     const { data: emp } = await sb
       .from('empresas')
       .select('owner_id')
@@ -632,7 +661,6 @@ async function bootstrap() {
     res.json({ ok: true, producto: data });
   });
 
-  // Reponer stock de un producto
   app.post('/api/lpb/empresas/:empresaId/productos/:productoId/reponer', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -647,7 +675,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Debes indicar una cantidad válida (mínimo 1).' });
     }
 
-    // Verificar propiedad de la empresa
     const { data: emp } = await sb
       .from('empresas')
       .select('owner_id, balance')
@@ -658,7 +685,6 @@ async function bootstrap() {
       return res.status(403).json({ error: 'No eres el propietario de esta empresa.' });
     }
 
-    // Leer producto
     const { data: producto } = await sb
       .from('entidad_shop')
       .select('stock, price, name')
@@ -677,7 +703,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: `Tu empresa no tiene suficiente saldo. Necesitas ${costoTotal.toLocaleString('es-ES')} panedas para reponer ${cantidad} unidad(es).` });
     }
 
-    // Actualizar stock
     const { error: stockErr } = await sb
       .from('entidad_shop')
       .update({ stock: (producto.stock ?? 0) + cantidad })
@@ -689,7 +714,6 @@ async function bootstrap() {
       return res.json({ ok: false, error: 'Error al actualizar el stock.' });
     }
 
-    // Descontar de la empresa
     const { error: balErr } = await sb
       .from('empresas')
       .update({ balance: (emp.balance ?? 0) - costoTotal })
@@ -697,7 +721,6 @@ async function bootstrap() {
 
     if (balErr) {
       console.error('reponer balance error:', balErr);
-      // Revertir stock
       await sb
         .from('entidad_shop')
         .update({ stock: producto.stock ?? 0 })
@@ -709,7 +732,6 @@ async function bootstrap() {
     res.json({ ok: true, productoId, cantidad, costoTotal, costoPorUnidad, nuevoStock: (producto.stock ?? 0) + cantidad });
   });
 
-  // Editar producto
   app.patch('/api/lpb/empresas/:empresaId/productos/:productoId', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -720,7 +742,6 @@ async function bootstrap() {
     const { empresaId, productoId } = req.params;
     const { name, description, price, emoji, category, stackable } = req.body;
 
-    // Verificar propiedad de la empresa
     const { data: emp } = await sb
       .from('empresas')
       .select('owner_id')
@@ -759,7 +780,6 @@ async function bootstrap() {
     res.json({ ok: true, producto: data });
   });
 
-  // Eliminar producto
   app.delete('/api/lpb/empresas/:empresaId/productos/:productoId', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
@@ -769,7 +789,6 @@ async function bootstrap() {
 
     const { empresaId, productoId } = req.params;
 
-    // Verificar propiedad
     const { data: emp } = await sb
       .from('empresas')
       .select('owner_id')
