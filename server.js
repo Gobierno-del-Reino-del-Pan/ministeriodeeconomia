@@ -780,6 +780,8 @@ async function bootstrap() {
     res.json({ ok: true, producto: data });
   });
 
+  app.get("/health", (_req, res) => res.json({ status: "OK" }));
+  
   app.delete('/api/lpb/empresas/:empresaId/productos/:productoId', async (req, res) => {
     const user = getSession(req);
     if (!user) return res.status(401).json({ error: 'No autenticado' });
